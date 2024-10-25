@@ -1,0 +1,96 @@
+body {
+    background: #f9f5f0; /* Latar belakang yang lembut */
+}
+
+.card {
+    transition: transform 0.3s, box-shadow 0.3s; /* Efek transisi untuk kartu */
+    border: none;
+    border-radius: 15px;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Efek bayangan saat hover */
+}
+
+.card-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #e63946; /* Warna judul kartu */
+}
+
+.btn-danger {
+    background-color: #e63946; /* Warna merah untuk tombol */
+    border: none;
+    font-weight: bold;
+}
+
+.btn-danger:hover {
+    background-color: #d62828; /* Warna lebih gelap saat di-hover */
+}
+
+.btn-primary {
+    border-radius: 50px; /* Membuat tombol lebih menarik */
+    background-color: #2a9d8f;
+    color: #fff;
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background-color: #1e6f5c; /* Hover pada tombol Tambah Produk */
+}
+
+.btn-warning {
+    background-color: #f4a261; /* Warna oranye yang lebih lembut */
+    border: none;
+    font-weight: bold;
+}
+
+.btn-warning:hover {
+    background-color: #e76f51; /* Warna lebih gelap saat di-hover */
+}
+
+.container h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #e63946; /* Warna merah untuk judul */
+}
+
+.product-img {
+    height: 250px;
+    object-fit: cover;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.product-card {
+    padding: 20px;
+    text-align: center;
+}
+
+.btn-group-product {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-around;
+}
+
+/* Tambahkan efek hover pada card */
+.card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Atur styling button */
+.btn-primary {
+    background-color: #ff6f61; /* Warna merah muda */
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #ff3d3d; /* Warna merah lebih terang saat hover */
+}
+

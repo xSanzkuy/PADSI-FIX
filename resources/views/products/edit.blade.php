@@ -69,7 +69,7 @@
 
                     <!-- Tombol Simpan -->
                     <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-success btn-lg">Perbarui Produk</button>
+                        <button type="submit" class="btn btn-success btn-lg" onclick="showSuccessAlert()">Perbarui Produk</button>
                         <a href="{{ route('products.index') }}" class="btn btn-secondary btn-lg ms-3">Batal</a>
                     </div>
                 </form>
@@ -77,6 +77,12 @@
         </div>
     </div>
 </div>
+
+<script>
+    function showSuccessAlert() {
+        alert('Produk berhasil diperbarui!');
+    }
+</script>
 
 <!-- Custom CSS -->
 <style>

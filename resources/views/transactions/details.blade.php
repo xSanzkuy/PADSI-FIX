@@ -10,7 +10,7 @@
         </div>
         <div class="card-body">
             <p><strong>Tanggal:</strong> {{ $transaction->tanggal }}</p>
-            <p><strong>Pegawai:</strong> {{ $transaction->pegawai->nama }}</p>
+            <p><strong>Pegawai:</strong> {{ $transaction->pegawai ? $transaction->pegawai->nama : 'Pegawai tidak tersedia' }}</p>
             <p><strong>Total Bayar:</strong> Rp {{ number_format($transaction->total_bayar, 0, ',', '.') }}</p>
             <p><strong>Nominal Pembayaran:</strong> Rp {{ number_format($transaction->nominal, 0, ',', '.') }}</p>
             <p><strong>Kembalian:</strong> Rp {{ number_format($transaction->kembalian, 0, ',', '.') }}</p>
@@ -28,16 +28,22 @@
                 </thead>
                 <tbody>
                 @foreach ($transaction->details as $detail)
+                    @if($detail->product) <!-- Pastikan data produk tersedia -->
                         <tr>
                             <td>
                                 <img src="{{ asset('storage/' . $detail->product->gambar) }}" alt="{{ $detail->product->nama_produk }}" class="img-thumbnail" style="width: 100px; height: 100px;">
                             </td>
                             <td>{{ $detail->product->nama_produk }}</td>
-                            <td>{{ $detail->jumlah }}</td>
                             <td>Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
+                            <td>{{ $detail->jumlah }}</td>
                             <td>Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                         </tr>
-                    @endforeach
+                    @else
+                        <tr>
+                            <td colspan="5">Produk tidak tersedia</td>
+                        </tr>
+                    @endif
+                @endforeach
                 </tbody>
             </table>
         </div>

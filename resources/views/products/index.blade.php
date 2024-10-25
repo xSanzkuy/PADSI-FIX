@@ -9,6 +9,14 @@
         <p class="lead">Kami menyajikan hidangan lezat dengan bahan segar dan rasa yang tak terlupakan. Pilih menu favorit Anda!</p>
     </div>
 
+    <!-- Alert Pesan -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <!-- Form Pencarian Produk -->
     <div class="text-center mb-4">
         <form action="{{ route('products.index') }}" method="GET" class="d-flex justify-content-center">
@@ -98,4 +106,4 @@
         }
     }
 </style>
-@endsection
+@endsection  

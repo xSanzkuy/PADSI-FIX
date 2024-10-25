@@ -6,6 +6,25 @@
 <div class="container mt-5">
     <h1 class="mb-4">Tambah Transaksi</h1>
 
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @foreach($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
     <form id="transaction-form" action="{{ route('transactions.store') }}" method="POST">
         @csrf
         <div class="mb-3">
@@ -23,6 +42,16 @@
             </select>
         </div>
 
+        <div class="mb-3">
+            <label for="member" class="form-label">Member (Opsional)</label>
+            <select class="form-select" name="telp_pelanggan" id="member">
+                <option value="" selected>Tidak Ada</option>
+                @foreach($members as $member)
+                    <option value="{{ $member->no_hp }}">{{ $member->nama }} ({{ $member->tingkat }})</option>
+                @endforeach
+            </select>
+        </div>
+
         <div id="product-list" class="mb-4">
             <h4>Daftar Produk</h4>
             <button type="button" class="btn btn-primary mb-2" id="add-product">Tambah Produk</button>
@@ -31,8 +60,8 @@
                     <select class="form-select product-dropdown" name="items[0][product_id]" required>
                         <option value="" disabled selected>Pilih Produk</option>
                         @foreach($products as $product)
-                            <option value="{{ $product->id }}" data-price="{{ $product->harga }}" data-image="{{ asset('storage/' . $product->gambar) }}">
-                                {{ $product->nama_produk }} (Rp {{ number_format($product->harga, 0, ',', '.') }})
+                            <option value="{{ $product->id }}" data-price="{{ $product->harga }}" data-stock="{{ $product->stok }}" data-image="{{ asset('storage/' . $product->gambar) }}">
+                                {{ $product->nama_produk }} (Rp {{ number_format($product->harga, 0, ',', '.') }}, Stok: {{ $product->stok }})
                             </option>
                         @endforeach
                     </select>
@@ -105,11 +134,30 @@
         let productItem = $(this).closest('.product-item');
         let price = parseFloat(productItem.find('option:selected').data('price'));
         let quantity = parseInt($(this).val());
+        let stock = parseInt(productItem.find('option:selected').data('stock'));
+
+        // Mengecek stok
+        if (quantity > stock) {
+            alert('Stok tidak cukup untuk jumlah yang diinput.');
+            $(this).val(stock);
+            quantity = stock;
+        }
 
         // Menghitung subtotal
         let subtotal = price * quantity;
         productItem.find('.subtotal').val(isNaN(subtotal) ? '' : `Rp ${subtotal.toLocaleString('id-ID')}`);
         calculateTotal();
+    });
+
+    $('#transaction-form').on('submit', function(e) {
+        let total = $('#total').data('total') || 0;
+        let nominal = parseFloat($('#nominal').val()) || 0;
+
+        // Mengecek apakah nominal cukup
+        if (nominal < total) {
+            e.preventDefault();
+            alert('Uang tidak cukup untuk melakukan pembayaran.');
+        }
     });
 
     $('#nominal').on('input', function() {

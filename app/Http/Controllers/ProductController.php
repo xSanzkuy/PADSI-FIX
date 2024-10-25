@@ -28,37 +28,43 @@ class ProductController extends Controller
     }
 
     public function store(Request $request)
-    {
-        // Validasi input
-        $request->validate([
-            'nama_product' => 'required|string|max:255',
-            'stok' => 'required|integer|min:0',
-            'harga' => 'required|numeric|min:0',
-            'gambar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+{
+    // Validasi input
+    $request->validate([
+        'nama_produk' => 'required|string|max:255', // Pastikan konsisten dengan form
+        'stok' => 'required|integer|min:0',
+        'harga' => 'required|numeric|min:0',
+        'gambar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    try {
+        // Log untuk memastikan semua data diterima
+        \Log::info('Data produk yang diterima:', $request->all());
+
+        // Upload gambar produk
+        if ($request->hasFile('gambar')) {
+            $imagePath = $request->file('gambar')->store('products', 'public');
+        } else {
+            throw new Exception("Gambar tidak ditemukan saat proses upload");
+        }
+
+        // Buat produk baru
+        Product::create([
+            'nama_produk' => $request->input('nama_produk'),
+            'stok' => $request->input('stok'),
+            'harga' => $request->input('harga'),
+            'gambar' => $imagePath,
         ]);
 
-        try {
-            // Upload gambar produk
-            if ($request->hasFile('gambar')) {
-                $imagePath = $request->file('gambar')->store('products', 'public');
-            } else {
-                throw new \Exception("Gambar tidak ditemukan saat proses upload");
-            }
+        \Log::info('Produk berhasil disimpan.');
 
-            // Buat produk baru
-            Product::create([
-                'nama_produk' => $request->input('nama_product'),
-                'stok' => $request->input('stok'),
-                'harga' => $request->input('harga'),
-                'gambar' => $imagePath,
-            ]);
-
-            return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan.');
-        } catch (\Exception $e) {
-            \Log::error('Error saat menyimpan produk: ' . $e->getMessage());
-            return redirect()->back()->withErrors('Terjadi kesalahan saat menyimpan produk, silakan coba lagi.');
-        }
+        return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan.');
+    } catch (Exception $e) {
+        \Log::error('Error saat menyimpan produk: ' . $e->getMessage());
+        return redirect()->back()->withErrors('Terjadi kesalahan saat menyimpan produk, silakan coba lagi.');
     }
+}
+
 
     public function edit($id)
     {
@@ -68,27 +74,33 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Validasi input
         $request->validate([
             'nama_produk' => 'required|string|max:255',
-            'stok' => 'required|integer',
-            'harga' => 'required|numeric',
+            'stok' => 'required|integer|min:0',
+            'harga' => 'required|numeric|min:0',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         try {
             $product = Product::findOrFail($id);
             $data = $request->only(['nama_produk', 'stok', 'harga']);
+
+            // Update gambar jika ada
             if ($request->hasFile('gambar')) {
-                // Delete old image
+                // Hapus gambar lama jika ada
                 if ($product->gambar) {
                     Storage::disk('public')->delete($product->gambar);
                 }
-                // Store new image
+                // Simpan gambar baru
                 $data['gambar'] = $request->file('gambar')->store('products', 'public');
             }
+
+            // Update produk
             $product->update($data);
             return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
         } catch (Exception $e) {
+            \Log::error('Error saat memperbarui produk: ' . $e->getMessage());
             return redirect()->back()->withErrors('Terjadi kesalahan saat memperbarui data produk, silakan coba lagi.');
         }
     }
@@ -103,6 +115,7 @@ class ProductController extends Controller
             $product->delete();
             return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
         } catch (Exception $e) {
+            \Log::error('Error saat menghapus produk: ' . $e->getMessage());
             return redirect()->route('products.index')->withErrors('Terjadi kesalahan saat menghapus produk, silakan coba lagi.');
         }
     }

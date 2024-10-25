@@ -32,6 +32,7 @@
                             <h5 class="card-title fw-bold text-primary">{{ ucfirst($member->nama) }}</h5>
                             <p class="card-text text-muted">Nomor HP: <span class="fw-bold">{{ $member->no_hp }}</span></p>
                             <p class="card-text">Tingkat: <span class="badge bg-secondary">{{ ucfirst($member->tingkat) }}</span></p>
+                            <p class="card-text">Total Transaksi: <span class="fw-bold">Rp {{ number_format($member->total_transaksi, 0, ',', '.') }}</span></p>
                             <div class="d-flex justify-content-between mt-4">
                                 <a href="{{ route('member.edit', $member->id) }}" class="btn btn-warning btn-sm text-white shadow-sm">Edit</a>
                                 <form action="{{ route('member.destroy', $member->id) }}" method="POST">

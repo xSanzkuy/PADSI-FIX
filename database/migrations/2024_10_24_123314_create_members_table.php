@@ -12,10 +12,11 @@ class CreateMembersTable extends Migration
             $table->id();
             $table->string('nama');
             $table->string('no_hp');
-            $table->enum('tingkat', ['silver', 'bronze', 'gold']);
+            $table->enum('tingkat', ['bronze', 'silver', 'gold'])->default('bronze');
+            $table->integer('total_transaksi')->default(0);
             $table->timestamps();
         });
-    }
+    }    
 
     public function down()
     {

@@ -4,6 +4,25 @@
 
 @section('content')
 <div class="container mt-4">
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @foreach($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3">Daftar Transaksi</h1>
         <a href="{{ route('transactions.create') }}" class="btn btn-primary">
@@ -30,7 +49,7 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $transaction->tanggal }}</td>
-                            <td>{{ $transaction->pegawai->nama }}</td>
+                            <td>{{ $transaction->pegawai ? $transaction->pegawai->nama : 'Pegawai tidak ditemukan' }}</td>
                             <td>Rp {{ number_format($transaction->total_bayar, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($transaction->nominal, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($transaction->kembalian, 0, ',', '.') }}</td>

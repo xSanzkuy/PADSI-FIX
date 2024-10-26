@@ -4,184 +4,182 @@
 
 @section('content')
 <div class="container mt-5">
-    <h1 class="mb-4">Tambah Transaksi</h1>
-
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-    @if($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @foreach($errors->all() as $error)
-                <p>{{ $error }}</p>
-            @endforeach
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-
-    <form id="transaction-form" action="{{ route('transactions.store') }}" method="POST">
+    <div class="row text-center mb-4">
+        <h1 class="display-4 fw-bold text-primary">Tambah Transaksi</h1>
+        <p class="lead">Isi detail transaksi di bawah ini.</p>
+    </div>
+    <form action="{{ route('transactions.store') }}" method="POST" enctype="multipart/form-data" class="shadow-lg p-5 rounded bg-white">
         @csrf
-        <div class="mb-3">
-            <label for="tanggal" class="form-label">Tanggal</label>
-            <input type="date" class="form-control" name="tanggal" id="tanggal" value="{{ date('Y-m-d') }}" required>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="tanggal" class="form-label">Tanggal</label>
+                <input type="date" class="form-control" id="tanggal" name="tanggal" value="{{ now()->format('Y-m-d') }}" required>
+            </div>
+            <div class="col-md-6">
+                <label for="pegawai_id" class="form-label">Pegawai</label>
+                <select class="form-control" id="pegawai_id" name="pegawai_id" required>
+                    @foreach($pegawai as $p)
+                        <option value="{{ $p->id }}">{{ $p->nama }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label for="pegawai" class="form-label">Pegawai</label>
-            <select class="form-select" name="pegawai_id" id="pegawai" required>
-                <option value="" disabled selected>Pilih Pegawai</option>
-                @foreach($pegawai as $p)
-                    <option value="{{ $p->id }}">{{ $p->nama }}</option>
-                @endforeach
-            </select>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="member" class="form-label">Member (Opsional)</label>
+                <select class="form-control" id="member" name="telp_pelanggan">
+                    <option value="" data-diskon="0">Tidak Ada</option>
+                    @foreach($members as $m)
+                        <option value="{{ $m->no_hp }}" data-diskon="{{ $m->tingkat }}">
+                            {{ $m->nama }} ({{ ucfirst($m->tingkat) }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label for="member" class="form-label">Member (Opsional)</label>
-            <select class="form-select" name="telp_pelanggan" id="member">
-                <option value="" selected>Tidak Ada</option>
-                @foreach($members as $member)
-                    <option value="{{ $member->no_hp }}">{{ $member->nama }} ({{ $member->tingkat }})</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div id="product-list" class="mb-4">
-            <h4>Daftar Produk</h4>
-            <button type="button" class="btn btn-primary mb-2" id="add-product">Tambah Produk</button>
-            <div class="product-item row mb-2">
-                <div class="col-md-4">
-                    <select class="form-select product-dropdown" name="items[0][product_id]" required>
-                        <option value="" disabled selected>Pilih Produk</option>
-                        @foreach($products as $product)
-                            <option value="{{ $product->id }}" data-price="{{ $product->harga }}" data-stock="{{ $product->stok }}" data-image="{{ asset('storage/' . $product->gambar) }}">
-                                {{ $product->nama_produk }} (Rp {{ number_format($product->harga, 0, ',', '.') }}, Stok: {{ $product->stok }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <input type="number" name="items[0][jumlah]" class="form-control quantity" min="1" placeholder="Jumlah" required>
-                </div>
-                <div class="col-md-3">
-                    <input type="text" class="form-control subtotal" readonly placeholder="Subtotal">
-                </div>
-                <div class="col-md-2">
-                    <img src="" alt="Gambar Produk" class="img-thumbnail product-image" style="width: 100px; height: 100px; display: none;">
+        <div id="product-container" class="mb-4">
+            <div class="card mb-3 product-item shadow-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <label for="product" class="form-label">Pilih Produk</label>
+                            <select class="form-control product" name="items[0][product_id]" required>
+                                @foreach($products as $product)
+                                    <option value="{{ $product->id }}" data-harga="{{ $product->harga }}" data-stok="{{ $product->stok }}">
+                                        {{ $product->nama_produk }} (Rp {{ number_format($product->harga, 0, ',', '.') }}, Stok: {{ $product->stok }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="jumlah" class="form-label">Jumlah</label>
+                            <input type="number" class="form-control jumlah" name="items[0][jumlah]" min="1" value="1" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="subtotal" class="form-label">Subtotal</label>
+                            <input type="text" class="form-control subtotal" readonly value="Rp 0">
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <button type="button" class="btn btn-danger btn-sm remove-product mt-4"><i class="fas fa-trash-alt"></i> Hapus</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="mb-3">
-            <label for="total" class="form-label">Total Bayar</label>
-            <input type="text" class="form-control" id="total" name="total_bayar" readonly>
+        <button type="button" class="btn btn-outline-primary mb-3" id="tambahProduk"><i class="fas fa-plus"></i> Tambah Produk</button>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="total_bayar" class="form-label">Total Bayar</label>
+                <input type="text" class="form-control form-control-lg" id="total_bayar" readonly value="Rp 0">
+            </div>
+            <div class="col-md-6">
+                <label for="nominal" class="form-label">Nominal Pembayaran</label>
+                <input type="number" class="form-control form-control-lg" id="nominal" name="nominal" required>
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label for="nominal" class="form-label">Nominal Pembayaran</label>
-            <input type="number" class="form-control" name="nominal" id="nominal" min="0" required>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="kembalian" class="form-label">Kembalian</label>
+                <input type="text" class="form-control form-control-lg" id="kembalian" readonly value="Rp 0">
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label for="kembalian" class="form-label">Kembalian</label>
-            <input type="text" class="form-control" id="kembalian" readonly>
+        <div class="text-center">
+            <button type="submit" class="btn btn-success btn-lg"><i class="fas fa-save"></i> Simpan Transaksi</button>
         </div>
-
-        <button type="submit" class="btn btn-success">Simpan Transaksi</button>
     </form>
 </div>
 
 <script>
-    let productIndex = 1;
+    document.addEventListener('DOMContentLoaded', function() {
+        const productContainer = document.getElementById('product-container');
+        const tambahProdukButton = document.getElementById('tambahProduk');
+        const totalBayarInput = document.getElementById('total_bayar');
+        const nominalInput = document.getElementById('nominal');
+        const kembalianInput = document.getElementById('kembalian');
+        const memberSelect = document.getElementById('member');
 
-    $('#add-product').click(function() {
-        let newProductItem = $('.product-item').first().clone();
-        newProductItem.find('select').attr('name', `items[${productIndex}][product_id]`).val('');
-        newProductItem.find('.quantity').attr('name', `items[${productIndex}][jumlah]`).val('');
-        newProductItem.find('.subtotal').val('');
-        newProductItem.find('.product-image').attr('src', '').hide();
-        $('#product-list').append(newProductItem);
-        productIndex++;
-    });
+        function updateTotal() {
+            let totalBayar = 0;
+            document.querySelectorAll('.product-item').forEach(function(item) {
+                const jumlah = item.querySelector('.jumlah').value;
+                const harga = item.querySelector('.product option:checked').dataset.harga;
+                const subtotal = jumlah * harga;
+                item.querySelector('.subtotal').value = 'Rp ' + new Intl.NumberFormat().format(subtotal);
+                totalBayar += subtotal;
+            });
 
-    $(document).on('change', '.product-dropdown', function() {
-        let productItem = $(this).closest('.product-item');
-        let imageUrl = $(this).find('option:selected').data('image');
-        let price = parseFloat($(this).find('option:selected').data('price'));
-        let quantity = parseInt(productItem.find('.quantity').val());
+            // Terapkan diskon jika member dipilih
+            const selectedMember = memberSelect.options[memberSelect.selectedIndex];
+            const tingkatMember = selectedMember.dataset.diskon;
+            let diskon = 0;
 
-        // Menampilkan gambar produk
-        let productImage = productItem.find('.product-image');
-        if (imageUrl) {
-            productImage.attr('src', imageUrl).show();
-        } else {
-            productImage.hide();
+            if (tingkatMember === 'bronze') {
+                diskon = 0.05; // 5%
+            } else if (tingkatMember === 'silver') {
+                diskon = 0.10; // 10%
+            } else if (tingkatMember === 'gold') {
+                diskon = 0.15; // 15%
+            }
+
+            if (diskon > 0) {
+                totalBayar -= totalBayar * diskon;
+            }
+
+            totalBayarInput.value = 'Rp ' + new Intl.NumberFormat().format(totalBayar);
+
+            // Update kembalian
+            updateKembalian();
         }
 
-        // Menghitung subtotal
-        let subtotal = price * quantity;
-        productItem.find('.subtotal').val(isNaN(subtotal) ? '' : `Rp ${subtotal.toLocaleString('id-ID')}`);
-        calculateTotal();
-    });
-
-    $(document).on('input', '.quantity', function() {
-        let productItem = $(this).closest('.product-item');
-        let price = parseFloat(productItem.find('option:selected').data('price'));
-        let quantity = parseInt($(this).val());
-        let stock = parseInt(productItem.find('option:selected').data('stock'));
-
-        // Mengecek stok
-        if (quantity > stock) {
-            alert('Stok tidak cukup untuk jumlah yang diinput.');
-            $(this).val(stock);
-            quantity = stock;
+        function updateKembalian() {
+            const nominal = parseFloat(nominalInput.value) || 0;
+            const totalBayar = parseFloat(totalBayarInput.value.replace(/[^\d]/g, '')) || 0;
+            const kembalian = nominal - totalBayar;
+            kembalianInput.value = 'Rp ' + new Intl.NumberFormat().format(kembalian > 0 ? kembalian : 0);
         }
 
-        // Menghitung subtotal
-        let subtotal = price * quantity;
-        productItem.find('.subtotal').val(isNaN(subtotal) ? '' : `Rp ${subtotal.toLocaleString('id-ID')}`);
-        calculateTotal();
-    });
+        productContainer.addEventListener('input', updateTotal);
+        memberSelect.addEventListener('change', updateTotal);
+        nominalInput.addEventListener('input', updateKembalian);
 
-    $('#transaction-form').on('submit', function(e) {
-        let total = $('#total').data('total') || 0;
-        let nominal = parseFloat($('#nominal').val()) || 0;
+        tambahProdukButton.addEventListener('click', function() {
+            const newIndex = document.querySelectorAll('.product-item').length;
+            const productItemTemplate = `
+                <div class="card mb-3 product-item shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-4">
+                                <select class="form-control product" name="items[${newIndex}][product_id]" required>
+                                    @foreach($products as $product)
+                                        <option value="{{ $product->id }}" data-harga="{{ $product->harga }}" data-stok="{{ $product->stok }}">
+                                            {{ $product->nama_produk }} (Rp {{ number_format($product->harga, 0, ',', '.') }}, Stok: {{ $product->stok }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" class="form-control jumlah" name="items[${newIndex}][jumlah]" min="1" value="1" required>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" class="form-control subtotal" readonly value="Rp 0">
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button type="button" class="btn btn-danger btn-sm remove-product"><i class="fas fa-trash-alt"></i> Hapus</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            productContainer.insertAdjacentHTML('beforeend', productItemTemplate);
+        });
 
-        // Mengecek apakah nominal cukup
-        if (nominal < total) {
-            e.preventDefault();
-            alert('Uang tidak cukup untuk melakukan pembayaran.');
-        }
-    });
-
-    $('#nominal').on('input', function() {
-        calculateChange();
-    });
-
-    function calculateTotal() {
-        let total = 0;
-        $('.subtotal').each(function() {
-            let subtotal = parseFloat($(this).val().replace(/[^\d]/g, ''));
-            if (!isNaN(subtotal)) {
-                total += subtotal;
+        productContainer.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-product')) {
+                e.target.closest('.product-item').remove();
+                updateTotal();
             }
         });
-        $('#total').val('Rp ' + total.toLocaleString('id-ID'));
-        $('#total').data('total', total);
-        calculateChange();
-    }
-
-    function calculateChange() {
-        let total = $('#total').data('total') || 0;
-        let nominal = parseFloat($('#nominal').val()) || 0;
-        let kembalian = nominal - total;
-        $('#kembalian').val(kembalian < 0 ? 'Rp 0' : 'Rp ' + kembalian.toLocaleString('id-ID'));
-    }
+    });
 </script>
+
 @endsection

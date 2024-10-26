@@ -5,6 +5,7 @@
 @section('content')
 <div class="container mt-5">
     <h1 class="text-center">Dashboard</h1>
+
     <div class="row mt-4">
         <div class="col-md-4">
             <div class="card text-white bg-success mb-3">
@@ -31,9 +32,24 @@
             </div>
         </div>
     </div>
+
     <div class="row mt-4">
         <div class="col-md-12">
             <canvas id="transactionsChart"></canvas>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h3 class="text-center">Member Teraktif</h3>
+            <div class="card">
+                <div class="card-header">3 Member dengan Jumlah Transaksi Terbanyak</div>
+                <div class="card-body">
+                    <ul id="topMembersList" class="list-group">
+                        <li class="list-group-item">Loading...</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -85,6 +101,21 @@
                             }
                         }
                     }
+                });
+            });
+
+        // Fetch Top 3 Members with Most Transactions
+        fetch('/dashboard/top-members')
+            .then(response => response.json())
+            .then(data => {
+                const topMembersList = document.getElementById('topMembersList');
+                topMembersList.innerHTML = ''; // Clear loading text
+
+                data.forEach(member => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.textContent = `${member.name} - ${member.transaction_count} Transaksi`;
+                    topMembersList.appendChild(li);
                 });
             });
     });

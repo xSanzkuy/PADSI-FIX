@@ -12,12 +12,27 @@ class Pegawai extends Model
 
     protected $table = 'pegawai';
 
-    protected $fillable = ['nama', 'email', 'alamat', 'id_role'];
+    // Daftar kolom yang bisa diisi secara massal
+    protected $fillable = ['nama', 'email', 'alamat', 'id_role', 'user_id'];
 
+    // Kolom untuk soft delete
     protected $dates = ['deleted_at'];
 
+    /**
+     * Relasi ke model Role
+     * Setiap Pegawai memiliki satu Role
+     */
     public function role()
     {
         return $this->belongsTo(Role::class, 'id_role', 'id');
+    }
+
+    /**
+     * Relasi ke model User
+     * Setiap Pegawai terhubung ke satu akun User
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

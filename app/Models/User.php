@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -18,6 +17,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'username', // Tambahkan username untuk mass assignment
         'name',
         'email',
         'password',
@@ -42,4 +42,33 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Define the relationship between User and Role.
+     * Each user can have multiple roles.
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
+    }
+
+    /**
+     * Define the relationship between User and Pegawai.
+     * Each user may have a related pegawai record.
+     */
+    public function pegawai()
+    {
+        return $this->hasOne(Pegawai::class, 'user_id', 'id'); // Pastikan kolom foreign key sesuai
+    }
+
+    /**
+     * Check if the user has a specific role.
+     * 
+     * @param string $roleName
+     * @return bool
+     */
+    public function hasRole($roleName)
+    {
+        return $this->roles()->where('nama_role', $roleName)->exists();
+    }
 }

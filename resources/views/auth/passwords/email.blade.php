@@ -1,6 +1,7 @@
 @extends('auth.authApp')
+
 @section('title')
-SISCIS | LOGIN
+    SISCIS | Reset Password
 @endsection
 
 @section('content')
@@ -8,45 +9,36 @@ SISCIS | LOGIN
     <div class="logo">
         <img src="{{ asset('images/Logo.png') }}" class="img-fluid" alt="Logo SISCIS">
     </div>
-    <form method="POST" action="{{ route('login.submit') }}" class="form">
+    <form method="POST" action="{{ route('password.email') }}" class="form">
         @csrf
         <div class="col-lg-12 login-title">
-            ADMIN PANEL
+            Reset Password
         </div>
-        @if(Session::has('error'))
-        <div class="alert alert-danger text-center" role="alert">
-            {{ Session::get('error') }}
-        </div>
+
+        @if(Session::has('status'))
+            <div class="alert alert-success text-center" role="alert">
+                {{ Session::get('status') }}
+            </div>
         @endif
 
-        <!-- Username Address -->
-        <div class="form-outline mb-4">
-            <label class="form-label" for="username">Username</label>
-            <input class="form-control" id="username" type="text" name="username" placeholder="Masukkan username atau email" required autofocus>
-        </div>
-
-        <!-- Password -->
-        <div class="form-outline mb-4">
-            <label for="password">Password</label>
-            <input id="password" class="form-control" type="password" name="password" placeholder="Masukkan password" required autocomplete="current-password"> 
-        </div>
-
-        <!-- Remember Me -->
-        <div class="row mb-1">
-            <div class="col d-flex justify-content-center">
-                <div class="form-check">
-                    <input id="remember_me" type="checkbox" class="form-check-input" name="remember">
-                    <label for="remember_me" class="form-check-label">{{ __('Remember me') }}</label>
-                </div>
+        @if($errors->any())
+            <div class="alert alert-danger text-center" role="alert">
+                {{ $errors->first() }}
             </div>
-        </div>
-        <div class="d-flex align-items-center justify-content-center mt-4">
-            <button class="btn btn-primary btn-block" style="padding: 10px 20px;">Login</button>
+        @endif
+
+        <!-- Email Address -->
+        <div class="form-outline mb-4">
+            <label class="form-label" for="email">Email</label>
+            <input class="form-control" id="email" type="email" name="email" placeholder="Masukkan email terdaftar" required autofocus>
         </div>
 
-        <!-- Reset Password Link -->
+        <div class="d-flex align-items-center justify-content-center mt-4">
+            <button class="btn btn-primary btn-block" style="padding: 10px;">Kirim Link Reset Password</button>
+        </div>
+        
         <div class="text-center mt-3">
-            <a href="{{ route('password.request') }}" class="text-decoration-none">Lupa password?</a>
+            <a href="{{ route('login.form') }}" class="text-decoration-none">Kembali ke Login</a>
         </div>
     </form>
 </div>

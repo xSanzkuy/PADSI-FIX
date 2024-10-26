@@ -163,6 +163,9 @@
                     <a href="{{ route('transactions.index') }}" class="list-group-item list-group-item-action bg-dark" id="menu-transactions">
                         <i class="fas fa-cash-register"></i> Transaksi
                     </a>
+                    <a href="{{ route('reports.index') }}" class="list-group-item list-group-item-action bg-dark" id="menu-reports">
+                        <i class="fas fa-chart-line"></i> Laporan Transaksi
+                    </a>
                 </div>
             </div>
 

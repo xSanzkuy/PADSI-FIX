@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder
     {
         // Memanggil UserSeeder untuk membuat data user default
         $this->call(UserSeeder::class);
+        $this->call(RoleSeeder::class);
+
     }
 }
 

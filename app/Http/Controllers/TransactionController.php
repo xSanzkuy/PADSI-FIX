@@ -13,11 +13,28 @@ use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Mengambil input tanggal dari form
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
         // Mengambil semua transaksi beserta relasi pegawai dan detail produknya
-        $transactions = Transaction::with('details.product', 'pegawai')->get();
-        return view('transactions.index', compact('transactions'));
+        $transactions = Transaction::with('details.product', 'pegawai');
+
+        // Jika ada input tanggal, maka tambahkan filter berdasarkan tanggal
+        if ($startDate && $endDate) {
+            $transactions = $transactions->whereBetween('tanggal', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $transactions = $transactions->whereDate('tanggal', '>=', $startDate);
+        } elseif ($endDate) {
+            $transactions = $transactions->whereDate('tanggal', '<=', $endDate);
+        }
+
+        // Dapatkan hasil transaksi
+        $transactions = $transactions->get();
+
+        return view('transactions.index', compact('transactions', 'startDate', 'endDate'));
     }
 
     public function create()
@@ -35,6 +52,7 @@ class TransactionController extends Controller
         $request->validate([
             'pegawai_id' => 'required|exists:pegawai,id',
             'telp_pelanggan' => 'nullable|string|max:15',
+            'tanggal' => 'required|date', // Tambahkan validasi untuk tanggal
             'nominal' => 'required|numeric|min:0',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
@@ -46,7 +64,7 @@ class TransactionController extends Controller
         try {
             // Inisialisasi transaksi baru
             $transaction = new Transaction();
-            $transaction->tanggal = now();
+            $transaction->tanggal = $request->input('tanggal'); // Gunakan tanggal dari input form
             $transaction->pegawai_id = $request->pegawai_id;
             $transaction->telp_pelanggan = $request->telp_pelanggan;
             $transaction->nominal = $request->nominal;
@@ -63,6 +81,24 @@ class TransactionController extends Controller
     
                 $subtotal = $product->harga * $item['jumlah'];
                 $totalBayar += $subtotal;
+            }
+    
+            // Terapkan diskon berdasarkan tingkat member jika ada
+            $member = Member::where('no_hp', $request->telp_pelanggan)->first();
+            if ($member) {
+                $diskon = 0;
+                switch ($member->tingkat) {
+                    case 'bronze':
+                        $diskon = 0.05; // 5% diskon untuk Bronze
+                        break;
+                    case 'silver':
+                        $diskon = 0.10; // 10% diskon untuk Silver
+                        break;
+                    case 'gold':
+                        $diskon = 0.15; // 15% diskon untuk Gold
+                        break;
+                }
+                $totalBayar -= $totalBayar * $diskon;
             }
     
             if ($request->nominal < $totalBayar) {
@@ -90,12 +126,7 @@ class TransactionController extends Controller
             }
     
             // Update status loyalitas member jika ada nomor telepon pelanggan
-            if ($request->telp_pelanggan) {
-                $member = Member::firstOrCreate(
-                    ['no_hp' => $request->telp_pelanggan],
-                    ['nama' => 'Pelanggan Baru', 'tingkat' => 'bronze']
-                );
-    
+            if ($member) {
                 // Update total transaksi member
                 $member->total_transaksi += $totalBayar;
     
@@ -119,7 +150,8 @@ class TransactionController extends Controller
     
             return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
-    }    
+    }
+    
     
     public function details($id)
     {
@@ -140,6 +172,7 @@ class TransactionController extends Controller
 
         return view('transactions.edit', compact('transaction', 'pegawai', 'products', 'members'));
     }
+    
 
     public function update(Request $request, $id)
     {
@@ -185,6 +218,24 @@ class TransactionController extends Controller
                 $totalBayar += $subtotal;
             }
 
+            // Terapkan diskon berdasarkan tingkat member jika ada
+            $member = Member::find($request->member_id);
+            if ($member) {
+                $diskon = 0;
+                switch ($member->tingkat) {
+                    case 'bronze':
+                        $diskon = 0.05; // 5% diskon untuk Bronze
+                        break;
+                    case 'silver':
+                        $diskon = 0.10; // 10% diskon untuk Silver
+                        break;
+                    case 'gold':
+                        $diskon = 0.15; // 15% diskon untuk Gold
+                        break;
+                }
+                $totalBayar -= $totalBayar * $diskon;
+            }
+
             if ($request->nominal < $totalBayar) {
                 throw new \Exception("Uang tidak cukup untuk melakukan pembayaran.");
             }
@@ -213,9 +264,7 @@ class TransactionController extends Controller
             }
 
             // Update status loyalitas member jika ada member yang terkait
-            if ($request->member_id) {
-                $member = Member::findOrFail($request->member_id);
-
+            if ($member) {
                 // Update total transaksi member
                 $member->total_transaksi += $totalBayar;
 
@@ -238,6 +287,31 @@ class TransactionController extends Controller
             DB::rollBack(); // Rollback jika terjadi error
 
             return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            // Mengambil data transaksi
+            $transaction = Transaction::findOrFail($id);
+
+            // Mengembalikan stok produk sebelumnya
+            foreach ($transaction->details as $detail) {
+                $product = Product::findOrFail($detail->product_id);
+                $product->stok += $detail->jumlah;
+                $product->save();
+            }
+
+            // Hapus detail transaksi
+            TransactionDetail::where('transaction_id', $transaction->id)->delete();
+
+            // Hapus transaksi
+            $transaction->delete();
+
+            return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('transactions.index')->withErrors(['error' => $e->getMessage()]);
         }
     }
 }

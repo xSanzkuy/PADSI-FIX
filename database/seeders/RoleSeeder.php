@@ -9,8 +9,25 @@ class RoleSeeder extends Seeder
 {
     public function run()
     {
-        Role::create(['nama_role' => 'Owner']);
-        Role::create(['nama_role' => 'Pegawai']);
-        Role::create(['nama_role' => 'Manager']);
+        // Tambahkan setiap role dengan memastikan tidak ada duplikat
+        Role::firstOrCreate(['nama_role' => 'Superadmin'], [
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        Role::firstOrCreate(['nama_role' => 'Owner'], [
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        Role::firstOrCreate(['nama_role' => 'Pegawai'], [
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        Role::firstOrCreate(['nama_role' => 'Manager'], [
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
     }
 }

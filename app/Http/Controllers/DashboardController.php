@@ -2,67 +2,58 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Penjualan;
+use App\Models\Product;
+use App\Models\TransactionDetail;
+use App\Models\Transaction;
+use App\Models\Member;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    protected $penjualan;
-
-    public function __construct()
-    {
-        $this->penjualan = new Penjualan();
-    }
-
     public function index()
     {
-        return view('dashboard');
-    }
+        // Total produk, transaksi, dan revenue
+        $totalProducts = Product::count();
+        $totalTransactions = Transaction::count();
+        $totalRevenue = TransactionDetail::sum('subtotal');
 
-    public function income()
-    {
-        $startDate = date('Y-m-01');
-        $endDate = date('Y-m-t');
-        $totalIncome = Penjualan::whereBetween('created_at', [$startDate, $endDate . ' 23:59:59'])->sum('total_harga');
-        return response()->json($totalIncome);
-    }
+        // Produk dengan transaksi terbanyak
+        $topProduct = TransactionDetail::select('product_id')
+            ->with('product')
+            ->groupBy('product_id')
+            ->orderByRaw('SUM(jumlah) DESC')
+            ->first();
+        $topProductName = $topProduct ? $topProduct->product->nama_produk : 'No Data';
 
-    public function salesCount()
-    {
-        $startDate = date('Y-m-01');
-        $endDate = date('Y-m-t');
-        $totalSales = Penjualan::whereBetween('created_at', [$startDate, $endDate . ' 23:59:59'])->count();
-        return response()->json($totalSales);
-    }
+        // Top 3 Member berdasarkan jumlah transaksi
+        $topMembers = Member::withCount(['transactions'])
+            ->orderBy('transactions_count', 'desc')
+            ->limit(3)
+            ->get();
 
-    public function transactionsByYear(Request $request)
-    {
-        $year = $request->input('tahun');
-        $salesCount = $this->penjualan->whereYear('created_at', $year)->count();
+        // Data untuk grafik transaksi per hari
+        $transactionData = Transaction::selectRaw('DATE(tanggal) as date, SUM(nominal) as total')
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->get();
 
-        $data = [
-            'sales' => $salesCount,
-        ];
+        $transactionDates = $transactionData->pluck('date')->toArray();
+        $transactionTotals = $transactionData->pluck('total')->toArray();
 
-        return response()->json($data);
-    }
+        // Transaksi terbaru
+        $recentTransactions = Transaction::orderBy('tanggal', 'desc')
+            ->limit(5)
+            ->get();
 
-    public function incomeByProductService(Request $request)
-    {
-        $year = $request->input('tahun');
-        $month = $request->input('bulan') ?? date('n');
-
-        $productIncome = $this->penjualan->incomeByProduk($year, $month);
-        $serviceIncome = $this->penjualan->incomeByJasa($year, $month);
-
-        $productTotal = (int) $productIncome->first()->Total ?? 0;
-        $serviceTotal = (int) $serviceIncome->first()->Total ?? 0;
-
-        $data = [
-            'product' => $productTotal,
-            'service' => $serviceTotal,
-        ];
-
-        return response()->json($data);
+        return view('dashboard', compact(
+            'totalProducts',
+            'totalTransactions',
+            'totalRevenue',
+            'topProductName',
+            'topMembers',
+            'transactionDates',
+            'transactionTotals',
+            'recentTransactions'
+        ));
     }
 }

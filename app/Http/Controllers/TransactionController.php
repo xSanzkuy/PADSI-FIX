@@ -51,30 +51,31 @@ class TransactionController extends Controller
         // Validasi input transaksi
         $request->validate([
             'pegawai_id' => 'required|exists:pegawai,id',
+            'member_id' => 'nullable|exists:members,id',
             'telp_pelanggan' => 'nullable|string|max:15',
-            'tanggal' => 'required|date', // Tambahkan validasi untuk tanggal
+            'tanggal' => 'required|date',
             'nominal' => 'required|numeric|min:0',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.jumlah' => 'required|integer|min:1',
         ]);
     
-        DB::beginTransaction(); // Mulai transaction untuk memastikan integritas data
+        DB::beginTransaction();
     
         try {
-            // Inisialisasi transaksi baru
+            // Simpan transaksi baru
             $transaction = new Transaction();
-            $transaction->tanggal = $request->input('tanggal'); // Gunakan tanggal dari input form
             $transaction->pegawai_id = $request->pegawai_id;
+            $transaction->member_id = $request->member_id; // Masukkan member_id
             $transaction->telp_pelanggan = $request->telp_pelanggan;
+            $transaction->tanggal = $request->tanggal;
             $transaction->nominal = $request->nominal;
     
-            // Hitung total bayar berdasarkan item yang dibeli
+            // Hitung total bayar
             $totalBayar = 0;
             foreach ($request->items as $item) {
                 $product = Product::findOrFail($item['product_id']);
     
-                // Cek apakah stok mencukupi
                 if ($product->stok < $item['jumlah']) {
                     throw new \Exception("Stok produk {$product->nama_produk} tidak mencukupi.");
                 }
@@ -83,21 +84,15 @@ class TransactionController extends Controller
                 $totalBayar += $subtotal;
             }
     
-            // Terapkan diskon berdasarkan tingkat member jika ada
-            $member = Member::where('no_hp', $request->telp_pelanggan)->first();
+            // Terapkan diskon jika ada member
+            $member = Member::find($request->member_id);
             if ($member) {
-                $diskon = 0;
-                switch ($member->tingkat) {
-                    case 'bronze':
-                        $diskon = 0.05; // 5% diskon untuk Bronze
-                        break;
-                    case 'silver':
-                        $diskon = 0.10; // 10% diskon untuk Silver
-                        break;
-                    case 'gold':
-                        $diskon = 0.15; // 15% diskon untuk Gold
-                        break;
-                }
+                $diskon = match($member->tingkat) {
+                    'bronze' => 0.05,
+                    'silver' => 0.10,
+                    'gold' => 0.15,
+                    default => 0,
+                };
                 $totalBayar -= $totalBayar * $diskon;
             }
     
@@ -106,9 +101,8 @@ class TransactionController extends Controller
             }
     
             $transaction->total_bayar = $totalBayar;
-            $transaction->kembalian = $transaction->nominal - $transaction->total_bayar;
-    
-            $transaction->save(); // Simpan transaksi
+            $transaction->kembalian = $request->nominal - $totalBayar;
+            $transaction->save();
     
             // Simpan detail transaksi dan update stok produk
             foreach ($request->items as $item) {
@@ -125,32 +119,23 @@ class TransactionController extends Controller
                 ]);
             }
     
-            // Update status loyalitas member jika ada nomor telepon pelanggan
+            // Update total transaksi member jika ada
             if ($member) {
                 // Update total transaksi member
                 $member->total_transaksi += $totalBayar;
-    
-                // Tentukan tingkat loyalitas berdasarkan total transaksi
-                if ($member->total_transaksi >= 500000) {
-                    $member->tingkat = 'gold';
-                } elseif ($member->total_transaksi >= 200000) {
-                    $member->tingkat = 'silver';
-                } elseif ($member->total_transaksi >= 100000) {
-                    $member->tingkat = 'bronze';
-                }
-    
-                $member->save();
+                $member->save(); // Simpan perubahan pada member
             }
     
-            DB::commit(); // Commit transaction jika semua proses berhasil
+            DB::commit();
     
             return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil ditambahkan.');
         } catch (\Exception $e) {
-            DB::rollBack(); // Rollback jika terjadi error
-    
+            DB::rollBack();
             return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
     }
+    
+    
     
     
     public function details($id)

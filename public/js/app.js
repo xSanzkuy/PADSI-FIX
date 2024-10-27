@@ -12355,12 +12355,17 @@ module.exports = axios;
   \*****************************/
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
-__webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js"); // Menggunakan CommonJS untuk memuat bootstrap.js
-__webpack_require__(/*! ../sass/app.scss */ "./resources/sass/app.scss"); // Menggunakan require untuk SCSS
+__webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js"); // Memuat bootstrap.js
+__webpack_require__(/*! ../sass/app.scss */ "./resources/sass/app.scss"); // Memuat SCSS ke dalam proyek
 
 var axios = __webpack_require__(/*! axios */ "./node_modules/axios/dist/browser/axios.cjs");
 window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+// Contoh: Tambahkan event listener untuk interaksi sederhana
+window.onload = function () {
+  console.log('Aplikasi siap digunakan!');
+};
 
 /***/ }),
 

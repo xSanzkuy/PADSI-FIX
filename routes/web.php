@@ -75,3 +75,5 @@ Route::middleware(['auth'])->group(function () {
 
 // Detail transaksi - bisa diakses oleh semua pengguna yang terautentikasi
 Route::get('transactions/{id}/details', [TransactionController::class, 'details'])->name('transactions.details');
+
+

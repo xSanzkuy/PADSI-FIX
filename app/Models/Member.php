@@ -8,6 +8,12 @@ class Member extends Model
 {
     protected $fillable = ['nama', 'no_hp', 'loyalty_level', 'points'];
 
+    // Relasi ke model Transaction
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'member_id'); // Pastikan 'member_id' adalah kolom yang sesuai
+    }
+
     public function upgradeLoyaltyLevel()
     {
         if ($this->points >= 1000 && $this->loyalty_level !== 'gold') {

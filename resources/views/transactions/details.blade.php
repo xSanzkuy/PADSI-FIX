@@ -15,11 +15,14 @@
                     <p><i class="fas fa-user"></i> <strong>Pegawai:</strong> {{ $transaction->pegawai ? $transaction->pegawai->nama : 'Pegawai tidak tersedia' }}</p>
                 </div>
                 <div class="col-md-6">
-                    @if ($transaction->telp_pelanggan)
-                        @php
-                            $member = \App\Models\Member::where('no_hp', $transaction->telp_pelanggan)->first();
-                            $diskonPersentase = 0;
-                            $diskonText = 'Tidak ada';
+                    @php
+                        // Inisialisasi variabel diskon
+                        $diskonPersentase = 0;
+                        $diskonText = 'Tidak ada';
+                        $totalDiskon = 0;
+
+                        if ($transaction->member_id) {
+                            $member = \App\Models\Member::find($transaction->member_id);
                             if ($member) {
                                 switch ($member->tingkat) {
                                     case 'bronze':
@@ -35,9 +38,12 @@
                                         $diskonText = '15%';
                                         break;
                                 }
+                                $totalDiskon = $transaction->total_bayar * ($diskonPersentase / 100);
                             }
-                            $totalDiskon = ($transaction->total_bayar / (1 - $diskonPersentase / 100)) - $transaction->total_bayar;
-                        @endphp
+                        }
+                    @endphp
+
+                    @if (isset($member))
                         <p><i class="fas fa-id-card"></i> <strong>Member:</strong> {{ $member->nama }} ({{ ucfirst($member->tingkat) }})</p>
                         <p><i class="fas fa-percent"></i> <strong>Diskon Member:</strong> {{ $diskonText }}</p>
                         <p><i class="fas fa-tags"></i> <strong>Total Diskon:</strong> Rp {{ number_format($totalDiskon, 0, ',', '.') }}</p>
@@ -78,16 +84,18 @@
                     </thead>
                     <tbody>
                     @foreach ($transaction->details as $detail)
-                        @if($detail->product) <!-- Pastikan data produk tersedia -->
+                        @if ($detail->product)
                             @php
                                 $hargaDiskon = $detail->harga_satuan;
-                                if (isset($diskonPersentase) && $diskonPersentase > 0) {
+                                if ($diskonPersentase > 0) {
                                     $hargaDiskon = $detail->harga_satuan * (1 - $diskonPersentase / 100);
                                 }
                             @endphp
                             <tr>
                                 <td class="text-center">
-                                    <img src="{{ asset('storage/' . $detail->product->gambar) }}" alt="{{ $detail->product->nama_produk }}" class="img-thumbnail" style="width: 80px; height: 80px;">
+                                    <img src="{{ asset('storage/' . $detail->product->gambar) }}" 
+                                         alt="{{ $detail->product->nama_produk }}" 
+                                         class="img-thumbnail" style="width: 80px; height: 80px;">
                                 </td>
                                 <td>{{ $detail->product->nama_produk }}</td>
                                 <td>Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
@@ -107,7 +115,9 @@
             </div>
         </div>
         <div class="card-footer text-center">
-            <a href="{{ route('transactions.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Kembali</a>
+            <a href="{{ route('transactions.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
         </div>
     </div>
 </div>

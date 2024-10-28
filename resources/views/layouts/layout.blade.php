@@ -9,71 +9,76 @@
     <link rel="stylesheet" href="{{ mix('css/app.css') }}">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #f0f2f5; /* Warna latar belakang yang lebih terang */
+            font-family: 'Montserrat', sans-serif; /* Menggunakan font Montserrat */
+            overflow-y: auto; /* Mengizinkan scrolling vertikal */
+            margin: 0; /* Menghapus margin default */
         }
 
         #wrapper {
             display: flex;
             min-height: 100vh;
-            transition: margin-left 0.3s ease; /* Animasi saat sidebar toggle */
+            transition: margin-left 0.3s ease;
         }
 
         #sidebar {
-            width: 250px; /* Tentukan lebar sidebar */
+            width: 250px;
             max-width: 250px;
-            background-color: #343a40;
+            background: #212529; /* Latar belakang sidebar hitam gelap */
             color: white;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: transform 0.3s ease; /* Animasi saat toggle */
+            transition: transform 0.3s ease;
+            border-radius: 0 20px 20px 0; /* Rounded corners untuk sidebar */
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3); /* Efek bayangan */
         }
 
         #sidebar.active {
-            transform: translateX(-100%); /* Menggeser sidebar ke kiri */
+            transform: translateX(-100%);
         }
 
         .sidebar-header {
-            font-size: 2rem;
-            font-weight: bold;
+            font-size: 1.5rem;
+            font-weight: 600;
             padding: 1.5rem;
             text-align: center;
-            color: #ffcc00;
+            color: royalblue; /* Warna header */
             margin-bottom: 1rem;
         }
 
         .nav-link {
-            color: #d1d1d1;
+            color: #b0bec5; /* Warna teks link */
             font-size: 1.1rem;
-            padding: 15px;
+            padding: 15px 20px;
             transition: background-color 0.3s, color 0.3s;
+            border-radius: 5px;
+            display: flex; /* Flex untuk ikon dan teks sejajar */
+            align-items: center;
         }
 
         .nav-link:hover {
-            background-color: #495057;
-            color: #ffcc00;
+            background-color: #007bff; /* Warna latar belakang saat hover */
+            color: white; /* Warna teks saat hover */
+            transform: scale(1.05); /* Efek zoom saat hover */
         }
 
         .nav-link.active {
-            background-color: #007bff;
+            background-color: #0056b3; /* Warna saat aktif */
             color: white;
         }
 
         #content {
             flex-grow: 1;
             padding: 2rem;
-            transition: margin-left 0.3s ease; /* Animasi margin */
-            margin-left: 0; /* Margin default */
-            width: calc(100% - 250px); /* Atur lebar konten dengan mengurangi lebar sidebar */
-            min-width: 700px; /* Minimum width untuk konten */
-        }
-
-        #wrapper.toggled #content {
-            margin-left: 0; /* Ketika sidebar tertutup, hilangkan margin */
-            width: calc(100%); /* Atur ulang lebar konten */
+            transition: margin-left 0.3s ease;
+            width: calc(100% - 250px);
+            min-width: 700px;
+            overflow-y: auto; /* Mengizinkan scrolling pada konten */
         }
 
         .logout-section {
@@ -88,23 +93,25 @@
 
         .btn-toggle-sidebar {
             position: fixed;
-            top: 15px;
+            top: 20px; /* Menempatkan tombol sedikit lebih jauh dari atas */
             left: 15px;
-            background-color: #007bff;
+            background-color: darkblue; /* Warna latar belakang tombol */
             color: white;
             border: none;
-            padding: 10px;
-            border-radius: 50%;
-            transition: transform 0.3s;
+            padding: 10px 12px;
+            border-radius: 5px; /* Rounded corners untuk tombol */
+            transition: transform 0.3s, background-color 0.3s;
             z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Menambahkan bayangan untuk efek 3D */
+            font-size: 1.2rem; /* Ukuran font lebih besar */
         }
 
         .btn-toggle-sidebar:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Warna saat hover */
         }
 
         .btn-toggle-sidebar.rotate {
-            transform: rotate(90deg); /* Tambahkan efek rotasi */
+            transform: rotate(90deg);
         }
 
         @media (max-width: 768px) {
@@ -130,7 +137,7 @@
         <!-- Sidebar -->
         <nav id="sidebar">
             <div>
-                <div class="sidebar-header">Salby Dashboard</div>
+                <div class="sidebar-header">Salby</div>
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a href="{{ route('dashboard') }}" class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">
@@ -186,7 +193,7 @@
         $(document).ready(function () {
             $('.btn-toggle-sidebar').on('click', function () {
                 $('#sidebar').toggleClass('active');
-                $('#wrapper').toggleClass('toggled'); // Menambahkan atau menghapus kelas 'toggled'
+                $('#wrapper').toggleClass('toggled');
                 $(this).toggleClass('rotate'); // Tambahkan efek rotasi pada tombol
             });
         });

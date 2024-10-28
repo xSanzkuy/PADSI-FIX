@@ -4,16 +4,23 @@
 
 @section('content')
 <div class="container mt-5">
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
     <div class="row mb-4">
         <div class="col-md-6 d-flex mb-3 mb-md-0">
-            <!-- Form Pencarian -->
             <form action="{{ route('member.index') }}" method="GET" class="d-flex w-100">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Member..." class="form-control me-2 shadow-sm">
                 <button type="submit" class="btn btn-primary shadow-sm">Cari</button>
             </form>
         </div>
         <div class="col-md-6 d-flex justify-content-md-end justify-content-start">
-            <!-- Tombol Tambah Member -->
             <a href="{{ route('member.create') }}" class="btn btn-success shadow-sm fw-bold">+ Tambah Member Baru</a>
         </div>
     </div>
@@ -31,7 +38,7 @@
                             </div>
                             <h5 class="card-title fw-bold text-primary">{{ ucfirst($member->nama) }}</h5>
                             <p class="card-text text-muted">Nomor HP: <span class="fw-bold">{{ $member->no_hp }}</span></p>
-                            <p class="card-text">Tingkat: <span class="badge bg-secondary">{{ ucfirst($member->tingkat) }}</span></p>
+                            <p class="card-text">Tingkat: <span class="badge bg-secondary">{{ $member->tingkat ?? 'Tidak Ada' }}</span></p>
                             <p class="card-text">Total Transaksi: <span class="fw-bold">Rp {{ number_format($member->total_transaksi, 0, ',', '.') }}</span></p>
                             <div class="d-flex justify-content-between mt-4">
                                 <a href="{{ route('member.edit', $member->id) }}" class="btn btn-warning btn-sm text-white shadow-sm">Edit</a>

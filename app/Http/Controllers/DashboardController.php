@@ -40,6 +40,15 @@ class DashboardController extends Controller
         $transactionDates = $transactionData->pluck('date')->toArray();
         $transactionTotals = $transactionData->pluck('total')->toArray();
 
+        // Data pendapatan berdasarkan produk
+        $productRevenueData = TransactionDetail::select('product_id')
+            ->selectRaw('SUM(subtotal) as total_revenue')
+            ->groupBy('product_id')
+            ->get();
+
+        $productNames = Product::whereIn('id', $productRevenueData->pluck('product_id'))->pluck('nama_produk')->toArray();
+        $productRevenue = $productRevenueData->pluck('total_revenue')->toArray();
+
         // Transaksi terbaru
         $recentTransactions = Transaction::orderBy('tanggal', 'desc')
             ->limit(5)
@@ -53,7 +62,9 @@ class DashboardController extends Controller
             'topMembers',
             'transactionDates',
             'transactionTotals',
-            'recentTransactions'
+            'recentTransactions',
+            'productNames',
+            'productRevenue' // Menambahkan data untuk grafik pie
         ));
     }
 }

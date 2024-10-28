@@ -1,61 +1,173 @@
 @import '~bootstrap/scss/bootstrap';
-// Example SCSS file
+
+
+// Styling Umum
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-  }
-  
-  body {
-    background-color: #f8f9fa;
+    font-family: 'Arial', sans-serif; // Font umum
+    background-color: #f8f9fa; // Warna latar belakang
+    margin: 0; // Menghilangkan margin default
+    padding: 0; // Menghilangkan padding default
+    overflow: hidden; // Menonaktifkan scroll
 }
 
+.container-fluid {
+    height: 100vh; // Tinggi penuh
+    display: flex;
+    flex-direction: column; // Mengatur arah kolom
+    padding: 20px; // Padding di dalam container
+}
+
+.row {
+    flex: 1; // Menggunakan flexbox agar baris bisa fleksibel
+}
+
+// Kartu
 .card {
-    border-radius: 10px;
-}
-
-.table-hover tbody tr:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-.card-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
-.card h2 {
-    font-size: 2.5rem;
-    margin: 0;
-}
-
-body {
-  background-color: #f8f9fa;
-}
-
-.card {
-  border-radius: 10px;
-  transition: transform 0.2s;
+    border-radius: 10px; // Sudut yang lebih membulat
+    margin-bottom: 20px; // Jarak antar kartu
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); // Tambahkan bayangan
+    transition: transform 0.2s; // Transisi saat hover
 }
 
 .card:hover {
-  transform: scale(1.02);
+    transform: scale(1.02); // Efek zoom saat hover
+}
+
+// Judul Kartu
+.card-title {
+    font-weight: bold; // Cetak tebal
+    color: #333; // Warna teks judul
+    font-size: 1.5rem; // Ukuran font judul
+}
+
+// Tabel
+.table {
+    margin-bottom: 0; // Menghapus margin bawah tabel
 }
 
 .table-hover tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 123, 255, 0.1); // Efek hover untuk tabel
+}
+
+.table th, .table td {
+    vertical-align: middle; // Rata tengah untuk tabel
+}
+
+// Item Daftar
+.list-group-item {
+    border: none; // Menghapus garis batas
+    transition: background-color 0.3s; // Efek transisi untuk item daftar
+}
+
+.list-group-item:hover {
+    background-color: rgba(0, 123, 255, 0.1); // Efek hover untuk item daftar
+}
+
+// Badge
+.badge {
+    background-color: #007bff; // Mengatur warna badge
+}
+
+// Tombol Logout
+.btn-danger {
+    background-color: #dc3545; // Warna tombol logout
+    border: none; // Menghapus border
+}
+
+.btn-danger:hover {
+    background-color: #c82333; // Warna saat hover
+}
+
+// Grafik
+canvas {
+    max-width: 100%; // Membatasi lebar grafik
+    height: 400px; // Tinggi grafik
+}
+
+// Aturan Responsif
+@media (max-width: 768px) {
+    .col-md-3, .col-md-8, .col-md-4 {
+        flex: 1 1 100%; // Memastikan kolom mengambil lebar penuh di layar kecil
+        max-width: 100%; // Menghindari overflow
+    }
+}
+
+@media (min-width: 768px) {
+    .col-md-8 {
+        flex: 0 0 66.66667%; // Mengatur kolom utama menjadi dua pertiga
+        max-width: 66.66667%; // Mengatur lebar maksimum
+    }
+
+    .col-md-4 {
+        flex: 0 0 33.33333%; // Mengatur kolom samping menjadi sepertiga
+        max-width: 33.33333%; // Mengatur lebar maksimum
+    }
+}
+
+// Menyusun ulang gaya untuk grafik pie
+#productChart {
+    max-height: 400px; // Tinggi maksimum untuk grafik pie
+}
+
+
+
+
+// Global Styles
+body {
+    background-color: #f8f9fa; // Background color
+    font-family: 'Montserrat', sans-serif; // Font
+    margin: 0; // Remove default margin
+}
+
+.container-fluid {
+    padding: 20px; // Padding for container
+}
+
+.card {
+    border-radius: 10px; // Rounded corners
+    transition: transform 0.2s; // Add hover effect
+    margin-bottom: 20px; // Space between cards
+}
+
+.card:hover {
+    transform: scale(1.02); // Slight zoom on hover
 }
 
 .card-title {
-  font-size: 1.2rem;
-  font-weight: bold;
+    font-weight: bold; // Bold title
+    color: #333; // Dark title color
 }
 
-.card h2 {
-  font-size: 2rem;
+// Chart heights
+#transactionChart {
+    max-height: 300px; // Height for transaction trends chart
+}
+
+#productChart {
+    max-height: 300px; // Height for product revenue distribution chart
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+    .col-md-6 {
+        flex: 1 1 100%; // Full width on small screens
+        max-width: 100%; // Prevent overflow
+    }
+}
+
+html, body {
+  height: 100%;
   margin: 0;
+  overflow: hidden; /* Nonaktifkan scroll */
 }
 
-canvas {
-  max-width: 100%;
-  height: 400px;
+.container-fluid {
+  height: calc(100vh - 56px); /* Menyesuaikan tinggi container dengan tinggi jendela dan navbar */
+  overflow-y: auto; /* Aktifkan scroll hanya pada konten jika diperlukan */
+}
+
+.row {
+  flex: 1; /* Mengatur row agar menggunakan space yang tersisa */
+  flex-wrap: wrap; /* Memungkinkan baris untuk membungkus jika diperlukan */
 }
 

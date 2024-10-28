@@ -18,9 +18,10 @@
             </div>
             <div class="mb-3">
                 <label for="tingkat" class="form-label fw-semibold">Tingkat Member</label>
-                <select name="tingkat" id="tingkat" class="form-select" required>
-                    <option value="silver">Silver</option>
+                <select name="tingkat" id="tingkat" class="form-select">
+                    <option value="" selected>Tidak Ada</option>
                     <option value="bronze">Bronze</option>
+                    <option value="silver">Silver</option>
                     <option value="gold">Gold</option>
                 </select>
             </div>

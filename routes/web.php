@@ -28,7 +28,7 @@ Route::get('/', function () {
 
 // Route untuk login dan logout
 Route::controller(LoginController::class)->group(function () {
-    Route::get('/login', 'index')->name('login.form'); // Halaman login
+    Route::get('/login', 'index')->name('login'); // Tambahkan alias 'login' untuk halaman login
     Route::post('/login', 'login')->name('login.submit'); // Proses login (POST)
     Route::post('/logout', 'logout')->name('logout'); // Proses logout (POST)
     Route::post('/reset-password/{id}', 'resetPass')->name('reset.password'); // Reset password
@@ -77,3 +77,5 @@ Route::middleware(['auth'])->group(function () {
 Route::get('transactions/{id}/details', [TransactionController::class, 'details'])->name('transactions.details');
 
 
+Route::get('/check-member', [MemberController::class, 'showCheckMemberForm'])->name('check.member.form');
+Route::post('/check-member', [MemberController::class, 'checkMember'])->name('check.member');

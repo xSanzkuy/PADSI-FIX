@@ -12,7 +12,7 @@ SISCIS | LOGIN
         <form method="POST" action="{{ route('login.submit') }}" class="form" data-aos="fade-up">
             @csrf
             <div class="col-lg-12 login-title">
-                ADMIN PANEL
+                LOGIN
             </div>
             @if(Session::has('error'))
             <div class="alert alert-danger text-center" role="alert">
@@ -22,8 +22,8 @@ SISCIS | LOGIN
 
             <!-- Username Address -->
             <div class="form-outline mb-4">
-                <label class="form-label" for="username">Username</label>
-                <input class="form-control" id="username" type="text" name="username" placeholder="Masukkan username" required autofocus>
+                <label class="form-label" for="username">Username/Email</label>
+                <input class="form-control" id="username" type="text" name="username" placeholder="Masukkan username/email" required autofocus>
             </div>
 
             <!-- Password -->

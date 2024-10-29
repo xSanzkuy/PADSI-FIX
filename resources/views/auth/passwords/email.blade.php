@@ -1,92 +1,111 @@
-@extends('auth.authApp')
-
-@section('title')
-    SISCIS | Reset Password
-@endsection
+@extends('layouts.app') {{-- Pastikan layout ini ada dan sesuai --}}
 
 @section('content')
-<div class="login">
-    <div class="logo">
-        <img src="{{ asset('images/Logo.png') }}" class="img-fluid" alt="Logo SISCIS">
+<div class="container-fluid" style="background-image: url('{{ asset('images/login.jpg') }}'); background-size: cover; background-position: center; height: 100vh; overflow: hidden;">
+    <div class="row justify-content-center align-items-center h-100">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg" style="opacity: 0.95; border-radius: 15px;">
+                <div class="card-header text-center" style="background-color: rgba(52, 58, 64, 0.8); color: white;">
+                    <h4 class="mb-0">Reset Password</h4>
+                </div>
+
+                <div class="card-body">
+                    @if (session('status'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('password.email') }}">
+                        @csrf
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" required autofocus placeholder="Enter your email address">
+                            @error('email')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block mt-3">
+                            Send Password Reset Link
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <form method="POST" action="{{ route('password.email') }}" class="form">
-        @csrf
-        <div class="col-lg-12 login-title">
-            Reset Password
-        </div>
-
-        @if(Session::has('status'))
-            <div class="alert alert-success text-center" role="alert">
-                {{ Session::get('status') }}
-            </div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert alert-danger text-center" role="alert">
-                {{ $errors->first() }}
-            </div>
-        @endif
-
-        <!-- Email Address -->
-        <div class="form-outline mb-4">
-            <label class="form-label" for="email">Email</label>
-            <input class="form-control" id="email" type="email" name="email" placeholder="Masukkan email terdaftar" required autofocus>
-        </div>
-
-        <div class="d-flex align-items-center justify-content-center mt-4">
-            <button class="btn btn-primary btn-block" style="padding: 10px;">Kirim Link Reset Password</button>
-        </div>
-        
-        <div class="text-center mt-3">
-            <a href="{{ route('login.form') }}" class="text-decoration-none">Kembali ke Login</a>
-        </div>
-    </form>
 </div>
 
 <style>
     body {
-        background: rgb(245, 245, 245);
-        font-family: 'Arial', sans-serif;
+        margin: 0;
+        overflow: hidden;
     }
-    .login {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        padding: 0 20px;
+
+    .btn-primary {
+        background-color: #ff6347;
+        border-color: #ff6347;
+        transition: all 0.3s ease;
     }
-    .login-title {
-        margin-bottom: 20px;
-        text-align: center;
-        font-size: 32px;
-        letter-spacing: 2px;
-        font-weight: bold;
-        color: #333;
+
+    .btn-primary:hover {
+        background-color: #ff4500;
+        border-color: #ff4500;
     }
-    .form {
-        padding: 2rem;
-        max-width: 400px; /* Ukuran maksimal untuk form */
-        width: 100%; /* Membuat form responsif */
+
+    .form-control {
         border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        background-color: white;
+        padding: 10px;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
-    .logo {
-        max-width: 20rem;
-        margin-bottom: 20px; /* Spasi bawah logo */
+
+    .form-control:focus {
+        border-color: #ff6347;
+        box-shadow: 0px 0px 5px rgba(255, 99, 71, 0.5);
     }
-    .img-fluid {
-        max-width: 100%;
-        height: auto;
-    }
-    @media (max-width: 450px) {
-        .form {
-            max-width: 90%; /* Memastikan form tidak melebihi lebar layar */
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding: 20px;
         }
-        .login-title {
-            font-size: 28px; /* Ukuran font yang lebih kecil untuk layar kecil */
+
+        .card {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .form-control {
+            font-size: 14px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container-fluid {
+            padding: 15px;
+        }
+
+        .btn-primary {
+            font-size: 14px;
+            padding: 10px 20px;
         }
     }
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+    @if(session('status'))
+        Toastify({
+            text: "{{ session('status') }}",
+            duration: 3000,
+            close: true,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "#4caf50",
+            stopOnFocus: true,
+        }).showToast();
+    @endif
+</script>
 @endsection

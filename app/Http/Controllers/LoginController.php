@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Log; 
 use Illuminate\Support\Facades\Password;
 
 class LoginController extends Controller
@@ -25,53 +25,51 @@ class LoginController extends Controller
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
-
-        $dataLogin = $request->only('username', 'password');
-
-        if (Auth::attempt(['username' => strtolower($dataLogin['username']), 'password' => $dataLogin['password']])) {
-            $user = Auth::guard('web')->user();
+    
+        $loginInput = $request->input('username');
+        // Tentukan apakah input adalah email atau username
+        $fieldType = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+    
+        // Coba login menggunakan kolom yang sesuai (username atau email)
+        $user = User::where($fieldType, $loginInput)->first();
+    
+        if ($user && Hash::check($request->input('password'), $user->password)) {
+            Auth::login($user);
             $pegawai = $user->pegawai;
-        } else {
-            $pegawai = Pegawai::where('email', $dataLogin['username'])->first();
-
-            if (empty($pegawai)) {
-                return redirect()->to('/login')->with('error', 'Username/Email dan Password salah')->withInput();
-            }
-
-            $user = User::where('id', $pegawai->user_id)->first();
-
-            if (empty($user) || !Hash::check($dataLogin['password'], $user->password)) {
-                return redirect()->to('/login')->with('error', 'Username/Email dan Password salah')->withInput();
-            }
-        }
-
-        $ses_data = [
-            'username' => $user->username,
-            'role' => $user->roles()->pluck('nama_role')->first() ?? 'pegawai',
-        ];
-
-        if ($pegawai) {
-            $ses_data += [
-                'no_pegawai' => $pegawai->no_pegawai,
-                'foto' => '/images/pegawai/' . ($pegawai->foto ?? 'pegawai.svg'),
-                'email' => $pegawai->email,
-                'no_hp' => $pegawai->no_hp,
-                'nama_depan' => explode(' ', $pegawai->nama)[0],
-                'nama_blkng' => explode(' ', $pegawai->nama, 2)[1] ?? '',
+    
+            // Data session yang tetap sama
+            $ses_data = [
+                'username' => $user->username,
+                'role' => $user->roles()->pluck('nama_role')->first() ?? 'pegawai',
             ];
+    
+            if ($pegawai) {
+                $ses_data += [
+                    'no_pegawai' => $pegawai->no_pegawai,
+                    'foto' => '/images/pegawai/' . ($pegawai->foto ?? 'pegawai.svg'),
+                    'email' => $pegawai->email,
+                    'no_hp' => $pegawai->no_hp,
+                    'nama_depan' => explode(' ', $pegawai->nama)[0],
+                    'nama_blkng' => explode(' ', $pegawai->nama, 2)[1] ?? '',
+                ];
+            } else {
+                $ses_data['foto'] = '/images/pegawai/pegawai.svg';
+            }
+    
+            $request->session()->put($ses_data);
+    
+            // Redirect berdasarkan role
+            if (session('role') === 'pegawai') {
+                return redirect()->route('transactions.index');
+            } else {
+                return redirect()->route('dashboard');
+            }
         } else {
-            $ses_data['foto'] = '/images/pegawai/pegawai.svg';
-        }
-
-        $request->session()->put($ses_data);
-
-        if (session('role') === 'pegawai') {
-            return redirect()->route('transactions.index');
-        } else {
-            return redirect()->route('dashboard');
+            // Jika login gagal, kembalikan dengan pesan error
+            return redirect()->to('/login')->with('error', 'Username/Email atau Password salah')->withInput();
         }
     }
-
+    
     public function showLinkRequestForm()
     {
         return view('auth.passwords.email');
@@ -84,7 +82,7 @@ class LoginController extends Controller
         $response = Password::sendResetLink($request->only('email'));
 
         return $response == Password::RESET_LINK_SENT
-            ? back()->with('status', __('Password reset link sent to your email.'))
+            ? back()->with('status', __('Password reset link dikirim ke email anda.'))
             : back()->withErrors(['email' => __($response)]);
     }
 
@@ -107,7 +105,7 @@ class LoginController extends Controller
         });
 
         return $response == Password::PASSWORD_RESET
-            ? redirect()->route('login.form')->with('status', __('Password has been reset!'))
+            ? redirect()->route('login')->with('status', __('Password Berhasil Di Ubah!'))
             : back()->withErrors(['email' => __($response)]);
     }
 
@@ -115,6 +113,6 @@ class LoginController extends Controller
     {
         Auth::logout();
         $request->session()->flush();
-        return redirect()->route('login.form');
+        return redirect()->route('login');
     }
 }

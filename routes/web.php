@@ -3,12 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransactionReportController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 
 /*
 |---------------------------------------------------------------------
@@ -34,12 +35,6 @@ Route::controller(LoginController::class)->group(function () {
     Route::post('/reset-password/{id}', 'resetPass')->name('reset.password'); // Reset password
 });
 
-// Route untuk permintaan reset password
-Route::get('/password/reset', [LoginController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('/password/email', [LoginController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('/password/reset/{token}', [LoginController::class, 'showResetForm'])->name('password.reset');
-Route::post('/password/reset', [LoginController::class, 'reset'])->name('password.update');
-
 // Route yang dilindungi oleh middleware auth
 Route::middleware(['auth'])->group(function () {
     // Dashboard
@@ -47,7 +42,6 @@ Route::middleware(['auth'])->group(function () {
 
     // Data Master Routes - Batasi akses dengan middleware role:Owner, Superadmin
     Route::prefix('master')->middleware('role:Owner,Superadmin')->group(function () {
-        Route::resource('penjualan', PenjualanController::class)->except(['show']); // Route untuk halaman penjualan
         Route::resource('pegawai', PegawaiController::class)->except(['show']); // Route untuk halaman pegawai
         Route::resource('products', ProductController::class)->except(['show']); // Route untuk halaman produk
         Route::resource('member', MemberController::class)->except(['show']); // Route untuk halaman member
@@ -79,3 +73,11 @@ Route::get('transactions/{id}/details', [TransactionController::class, 'details'
 
 Route::get('/check-member', [MemberController::class, 'showCheckMemberForm'])->name('check.member.form');
 Route::post('/check-member', [MemberController::class, 'checkMember'])->name('check.member');
+
+
+
+// Menampilkan form reset password
+Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+Route::get('/password/forgot', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');

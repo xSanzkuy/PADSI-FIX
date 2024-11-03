@@ -42,10 +42,14 @@ Route::middleware(['auth'])->group(function () {
 
     // Data Master Routes - Batasi akses dengan middleware role:Owner, Superadmin
     Route::prefix('master')->middleware('role:Owner,Superadmin')->group(function () {
-        Route::resource('pegawai', PegawaiController::class)->except(['show']); // Route untuk halaman pegawai
-        Route::resource('products', ProductController::class)->except(['show']); // Route untuk halaman produk
-        Route::resource('member', MemberController::class)->except(['show']); // Route untuk halaman member
+        Route::resource('pegawai', PegawaiController::class)->except(['show']);
         Route::get('/transaction-reports', [TransactionReportController::class, 'index'])->name('transaction-reports.index');
+    });
+
+    //pembatasan role pegawai
+    Route::prefix('master')->middleware('role:Owner,Superadmin,Pegawai')->group(function () {
+        Route::resource('products', ProductController::class)->except(['show']);
+        Route::resource('member', MemberController::class)->except(['show']);
     });
 
     // Transaction Routes
@@ -81,3 +85,4 @@ Route::get('/password/reset/{token}', [ResetPasswordController::class, 'showRese
 Route::post('/password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 Route::get('/password/forgot', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('/password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+

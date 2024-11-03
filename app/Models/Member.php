@@ -31,7 +31,7 @@ class Member extends Model
         $this->total_transaksi += $nominal;
         $this->save();
 
-        // Debugging: Tambahkan log untuk memastikan addTransaction berjalan
+        //   Debugging: Tambahkan log untuk memastikan addTransaction berjalan
         \Log::info("Total transaksi setelah penambahan: {$this->total_transaksi} untuk member ID: {$this->id}");
 
         // Lakukan pengecekan dan upgrade tingkat jika memenuhi syarat

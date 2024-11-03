@@ -80,7 +80,7 @@
                         <td>{{ $transaction->tanggal }}</td>
                         <td>{{ $transaction->pegawai ? $transaction->pegawai->nama : 'Pegawai tidak tersedia' }}</td>
                         <td>Rp {{ number_format($transaction->total_bayar, 0, ',', '.') }}</td>
-                        <td>Rp {{ number_format($transaction->nominal_pembayaran, 0, ',', '.') }}</td>
+                        <td>Rp {{ number_format($transaction->nominal, 0, ',', '.') }}</td>
                         <td>Rp {{ number_format($transaction->kembalian, 0, ',', '.') }}</td>
                     </tr>
                 @endforeach

@@ -23,7 +23,8 @@ class DashboardController extends Controller
             ->groupBy('product_id')
             ->orderByRaw('SUM(jumlah) DESC')
             ->first();
-        $topProductName = $topProduct ? $topProduct->product->nama_produk : 'No Data';
+            $topProductName = $topProduct && $topProduct->product ? $topProduct->product->nama_produk : 'No Data';
+        
 
         // Top 3 Member berdasarkan jumlah transaksi
         $topMembers = Member::withCount(['transactions'])

@@ -32,8 +32,7 @@ class TransactionController extends Controller
         }
 
         // Dapatkan hasil transaksi
-        $transactions = $transactions->get();
-
+        $transactions = $transactions->paginate(10);
         return view('transactions.index', compact('transactions', 'startDate', 'endDate'));
     }
 
@@ -280,29 +279,15 @@ class TransactionController extends Controller
             return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
     }
+    /**
+ * Display the print view for a specific transaction.
+ */
+public function print($id)
+{
+    // Mengambil data transaksi berdasarkan ID beserta relasi detail transaksi dan produk terkait
+    $transaction = Transaction::with('details.product', 'pegawai', 'member')->findOrFail($id);
 
-    public function destroy($id)
-    {
-        try {
-            // Mengambil data transaksi
-            $transaction = Transaction::findOrFail($id);
+    return view('transactions.print', compact('transaction'));
+}
 
-            // Mengembalikan stok produk sebelumnya
-            foreach ($transaction->details as $detail) {
-                $product = Product::findOrFail($detail->product_id);
-                $product->stok += $detail->jumlah;
-                $product->save();
-            }
-
-            // Hapus detail transaksi
-            TransactionDetail::where('transaction_id', $transaction->id)->delete();
-
-            // Hapus transaksi
-            $transaction->delete();
-
-            return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dihapus.');
-        } catch (\Exception $e) {
-            return redirect()->route('transactions.index')->withErrors(['error' => $e->getMessage()]);
-        }
-    }
 }

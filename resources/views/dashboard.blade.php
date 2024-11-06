@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid" style="overflow: hidden;">
     <div class="row text-center mb-4">
         <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
             <div class="card text-white bg-primary shadow">
@@ -70,7 +70,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($recentTransactions->take(3) as $index => $transaction) <!-- Hanya menampilkan 3 transaksi terbaru -->
+                            @foreach($recentTransactions->take(3) as $index => $transaction)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $transaction->tanggal }}</td>

@@ -12,7 +12,27 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-sm p-4">
-                <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+                {{-- Alert untuk pesan sukses --}}
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                {{-- Alert untuk pesan error --}}
+                @if($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data" id="updateForm">
                     @csrf
                     @method('PUT')
                     
@@ -69,7 +89,7 @@
 
                     <!-- Tombol Simpan -->
                     <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-success btn-lg" onclick="showSuccessAlert()">Perbarui Produk</button>
+                        <button type="submit" class="btn btn-success btn-lg">Perbarui Produk</button>
                         <a href="{{ route('products.index') }}" class="btn btn-secondary btn-lg ms-3">Batal</a>
                     </div>
                 </form>
@@ -79,9 +99,12 @@
 </div>
 
 <script>
-    function showSuccessAlert() {
-        alert('Produk berhasil diperbarui!');
-    }
+    document.addEventListener("DOMContentLoaded", function () {
+        // Cek jika ada session sukses, maka tampilkan alert JavaScript
+        @if(session('success'))
+            alert('Produk berhasil diperbarui!');
+        @endif
+    });
 </script>
 
 <!-- Custom CSS -->

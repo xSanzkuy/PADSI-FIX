@@ -14,16 +14,15 @@ class MemberController extends Controller
     {
         // Mengambil input pencarian (search)
         $search = $request->input('search');
-
+    
         // Mengambil data member berdasarkan pencarian
         $members = Member::when($search, function ($query, $search) {
-            return $query->where('nama', 'like', '%' . $search . '%')
-                         ->orWhere('no_hp', 'like', '%' . $search . '%')
-                         ->orWhere('tingkat', 'like', '%' . $search . '%');
+            return $query->where('nama', 'like', '%' . $search . '%'); // Hanya mencari berdasarkan nama
         })->get();
-
+    
         return view('member.index', compact('members', 'search'));
     }
+    
 
     /**
      * Show the form for creating a new resource.
@@ -42,7 +41,7 @@ class MemberController extends Controller
         // Validasi input
         $request->validate([
             'nama' => 'required|string|max:255',
-            'no_hp' => 'required|string|max:15',
+            'no_hp' => 'required|string|max:15|unique:members,no_hp', 
             'tingkat' => 'required|in:bronze,silver,gold', // Memastikan input tingkat sesuai dengan opsi
         ]);
 
@@ -70,7 +69,7 @@ class MemberController extends Controller
         // Validasi input
         $request->validate([
             'nama' => 'required|string|max:255',
-            'no_hp' => 'required|string|max:15',
+            'no_hp' => 'required|string|max:15|unique:members,no_hp',
             'tingkat' => 'required|in:bronze,silver,gold', // Memastikan input tingkat sesuai dengan opsi
         ]);
 

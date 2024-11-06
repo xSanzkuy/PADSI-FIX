@@ -12114,3 +12114,494 @@ html, body {
   flex: 1; /* Mengatur row agar menggunakan space yang tersisa */
   flex-wrap: wrap; /* Memungkinkan baris untuk membungkus jika diperlukan */
 }
+
+.text-primary {
+  color: #003366; /* Dark blue dari logo */
+}
+
+.bg-primary {
+  background-color: #003366; /* Dark blue */
+}
+
+.btn-success {
+  background-color: #2d6a4f; /* Hijau sesuai logo */
+  border: none;
+}
+
+.btn-danger {
+  background-color: #c1121f; /* Merah dari logo */
+  border: none;
+}
+
+.btn-info {
+  background-color: #003366; /* Dark blue */
+  color: #ffffff;
+}
+
+.btn-success:hover,
+.btn-danger:hover,
+.btn-info:hover {
+  opacity: 0.85;
+  transform: scale(1.02);
+  transition: all 0.3s ease;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #2d6a4f; /* Hijau */
+  border-color: #2d6a4f;
+}
+
+.pagination .page-link {
+  color: #003366; /* Dark blue */
+}
+
+.pagination .page-link:hover {
+  background-color: #c1121f; /* Merah */
+  color: #ffffff;
+}
+
+.card-header {
+  background-color: #003366;
+  border-bottom: none;
+}
+
+.card {
+  border-radius: 15px;
+}
+
+.table thead {
+  background-color: #f8f9fa; /* Light background */
+  color: #003366; /* Dark blue text */
+}
+
+.table-bordered th, .table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 51, 102, 0.05); /* Light blue hover */
+}
+
+.btn {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.text-primary {
+  color: #003366;
+}
+
+.bg-primary {
+  background-color: #003366;
+}
+
+.btn-success {
+  background-color: #2d6a4f;
+  border: none;
+  color: #fff;
+}
+
+.btn-danger {
+  background-color: #b22222;
+  border: none;
+  color: #fff;
+}
+
+.btn-info {
+  background-color: #003366;
+  color: #ffffff;
+}
+
+.btn-success:hover,
+.btn-danger:hover,
+.btn-info:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+  transition: all 0.3s ease;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #2d6a4f;
+  border-color: #2d6a4f;
+}
+
+.pagination .page-link {
+  color: #003366;
+}
+
+.pagination .page-link:hover {
+  background-color: #b22222;
+  color: #ffffff;
+}
+
+.card-header {
+  background-color: #003366;
+  color: #ffffff;
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+}
+
+.card {
+  border-radius: 15px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.table thead {
+  background-color: #e3e3e3; /* Light gray for table header */
+  color: #003366; /* Dark blue text */
+}
+
+.table-bordered th, .table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f0f0f0; /* Light hover effect */
+}
+
+.btn {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.page-title {
+  font-size: 2rem;
+  color: #2d6a4f;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.table-header {
+  background-color: #003366;
+  border-bottom: none;
+  color: #ffffff;
+  border-radius: 10px 10px 0 0;
+}
+
+.table-head-row th {
+  background-color: #f8f9fa;
+  color: #003366;
+  font-weight: 600;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f0f0f0;
+}
+
+.btn-add {
+  background-color: #2d6a4f;
+  color: #ffffff;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.btn-add:hover {
+  background-color: rgb(29.8013245033, 70.1986754967, 52.3178807947);
+}
+
+.btn-info {
+  background-color: #003366;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.btn-danger {
+  background-color: #b22222;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #2d6a4f;
+  border-color: #2d6a4f;
+}
+
+.pagination .page-link {
+  color: #003366;
+}
+
+.pagination .page-link:hover {
+  background-color: #b22222;
+  color: #ffffff;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.card {
+  border-radius: 15px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.text-primary-custom {
+  color: #003366;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.text-secondary {
+  color: #6c757d;
+}
+
+.btn-outline-primary-custom {
+  color: #003366;
+  border-color: #003366;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary-custom:hover {
+  background-color: #003366;
+  color: #fff;
+}
+
+.btn-success-custom {
+  background-color: #2d6a4f;
+  color: #ffffff;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-success-custom:hover {
+  background-color: rgb(29.8013245033, 70.1986754967, 52.3178807947);
+}
+
+.btn-danger {
+  background-color: #b22222;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.btn-danger:hover {
+  background-color: rgb(135.179245283, 25.820754717, 25.820754717);
+}
+
+.form-container {
+  background-color: #ffffff;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-control {
+  border-radius: 10px;
+  transition: box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+  box-shadow: 0px 0px 10px rgba(50, 50, 150, 0.2);
+}
+
+.product-item {
+  border-radius: 10px;
+  background-color: #f8f9fa;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.img-thumbnail {
+  width: 100px;
+  height: 100px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.text-primary-custom {
+  color: #003366;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.btn-primary-custom {
+  background-color: #003366;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary-custom:hover {
+  background-color: rgb(0, 25.5, 51);
+  color: #fff;
+}
+
+.btn-danger {
+  background-color: #b22222;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.table-header {
+  background-color: #e3e3e3;
+  color: #003366;
+  font-weight: bold;
+}
+
+.card-header {
+  background-color: #003366;
+  color: #ffffff;
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #2d6a4f;
+  border-color: #2d6a4f;
+  color: #fff;
+}
+
+.pagination .page-link {
+  color: #003366;
+}
+
+.pagination .page-link:hover {
+  background-color: rgb(60.1986754967, 141.8013245033, 105.6821192053);
+  color: #fff;
+}
+
+.text-primary-custom {
+  color: #003366;
+}
+
+.btn-primary-custom {
+  background-color: #003366;
+  color: #ffffff;
+  font-weight: bold;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary-custom:hover {
+  background-color: rgb(0, 25.5, 51);
+  color: #ffffff;
+}
+
+.card {
+  border-radius: 15px;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-control-lg {
+  font-size: 1.1rem;
+  padding: 0.5rem 1rem;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.form-control-lg:focus {
+  box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.25);
+}
+
+.btn-primary-custom {
+  background-color: #003366;
+  color: #ffffff;
+  font-weight: bold;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary-custom:hover {
+  background-color: rgb(0, 25.5, 51);
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 10px;
+}
+
+/* Warna dasar */
+body {
+  background-color: #f9f9f9;
+}
+
+/* Card style */
+.card {
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.card:hover {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Initial Circle */
+.initial-circle {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #fff;
+  margin-top: 10px;
+}
+
+/* Role Badge */
+.role-badge {
+  background-color: #6c757d;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+/* Custom button styles with logo color theme */
+.btn-green {
+  background-color: #4CAF50; /* Green */
+  color: #fff;
+  border: none;
+}
+
+.btn-blue {
+  background-color: #337ab7; /* Blue from logo */
+  color: #fff;
+  border: none;
+}
+
+.btn-red {
+  background-color: #d9534f; /* Red */
+  color: #fff;
+  border: none;
+}
+
+.btn-primary {
+  background-color: #337ab7;
+  border-color: #337ab7;
+}
+
+/* Hover effects */
+.btn-green:hover {
+  background-color: #45a049;
+}
+
+.btn-blue:hover {
+  background-color: #286090;
+}
+
+.btn-red:hover {
+  background-color: #c9302c;
+}

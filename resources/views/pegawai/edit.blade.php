@@ -4,33 +4,59 @@
 
 @section('content')
 <div class="container mt-5">
-    <div class="card shadow p-4 border-0 rounded-lg">
-        <h1 class="mb-4 text-center text-success fw-bold">Edit Data Pegawai</h1>
+    <div class="card shadow-lg p-5 border-0 rounded-lg">
+        <!-- Judul Halaman -->
+        <h1 class="text-center fw-bold mb-4" style="color: #003366; font-size: 2.5rem;">
+            <i class="fas fa-user-edit"></i> Edit Data Pegawai
+        </h1>
+
+        <!-- Tampilkan Pesan Error Jika Ada -->
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <!-- Form Edit Pegawai -->
         <form action="{{ route('pegawai.update', $pegawai->id) }}" method="POST">
             @csrf
             @method('PUT')
-            <div class="mb-3">
+
+            <!-- Input Nama Pegawai -->
+            <div class="mb-4">
                 <label for="nama" class="form-label fw-semibold">Nama Pegawai</label>
-                <input type="text" class="form-control" id="nama" name="nama" value="{{ $pegawai->nama }}" required>
+                <input type="text" class="form-control form-control-lg rounded-pill" id="nama" name="nama" value="{{ $pegawai->nama }}" required>
             </div>
-            <div class="mb-3">
+            
+            <!-- Input Email Pegawai -->
+            <div class="mb-4">
                 <label for="email" class="form-label fw-semibold">Email Pegawai</label>
-                <input type="email" class="form-control" id="email" name="email" value="{{ $pegawai->email }}" required>
+                <input type="email" class="form-control form-control-lg rounded-pill" id="email" name="email" value="{{ $pegawai->email }}" required>
             </div>
-            <div class="mb-3">
+            
+            <!-- Input Alamat Pegawai -->
+            <div class="mb-4">
                 <label for="alamat" class="form-label fw-semibold">Alamat</label>
-                <input type="text" class="form-control" id="alamat" name="alamat" value="{{ $pegawai->alamat }}" required>
+                <input type="text" class="form-control form-control-lg rounded-pill" id="alamat" name="alamat" value="{{ $pegawai->alamat }}" required>
             </div>
-            <div class="mb-3">
+            
+            <!-- Pilihan Role Pegawai -->
+            <div class="mb-4">
                 <label for="role" class="form-label fw-semibold">Role</label>
-                <select name="id_role" id="role" class="form-select" required>
+                <select name="id_role" id="role" class="form-select form-select-lg rounded-pill" required>
                     <option value="">Pilih Role</option>
                     @foreach($roles as $role)
                         <option value="{{ $role->id }}" {{ $pegawai->id_role == $role->id ? 'selected' : '' }}>{{ $role->nama_role }}</option>
                     @endforeach
                 </select>
             </div>
-            <button type="submit" class="btn btn-success w-100 btn-lg mt-3">Update</button>
+            
+            <!-- Tombol Update -->
+            <button type="submit" class="btn btn-primary-custom w-100 btn-lg rounded-pill mt-3">Update</button>
         </form>
     </div>
 </div>

@@ -6,6 +6,27 @@
 <div class="container mt-5">
     <div class="card shadow p-4 border-0 rounded-lg">
         <h1 class="mb-4 text-center text-success fw-bold">Edit Data Member</h1>
+
+        {{-- Alert untuk pesan sukses --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        {{-- Alert untuk pesan error --}}
+        @if($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <form action="{{ route('member.update', $member->id) }}" method="POST">
             @csrf
             @method('PUT')

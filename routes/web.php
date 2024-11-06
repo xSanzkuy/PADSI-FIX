@@ -40,19 +40,19 @@ Route::middleware(['auth'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard'); // Dashboard hanya bisa diakses setelah login
 
-    // Data Master Routes - Batasi akses dengan middleware role:Owner, Superadmin
+    // Data Master Routes - Batasi akses dengan middleware role:Owner, Superadmin , pegawai gak bs akses ini
     Route::prefix('master')->middleware('role:Owner,Superadmin')->group(function () {
         Route::resource('pegawai', PegawaiController::class)->except(['show']);
         Route::get('/transaction-reports', [TransactionReportController::class, 'index'])->name('transaction-reports.index');
     });
 
-    //pembatasan role pegawai
+    //yang bisa di akses
     Route::prefix('master')->middleware('role:Owner,Superadmin,Pegawai')->group(function () {
         Route::resource('products', ProductController::class)->except(['show']);
         Route::resource('member', MemberController::class)->except(['show']);
     });
 
-    // Transaction Routes
+    // Transaction Routes (bisa di akses semua)
     Route::prefix('transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index'])->name('transactions.index');
         Route::get('/create', [TransactionController::class, 'create'])->name('transactions.create');
@@ -60,7 +60,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
         Route::get('/{transaction}/edit', [TransactionController::class, 'edit'])->name('transactions.edit');
         Route::put('/{transaction}', [TransactionController::class, 'update'])->name('transactions.update');
-        Route::delete('/{transaction}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+        Route::get('/{transaction}/print', [TransactionController::class, 'print'])->name('transactions.print');
     });
 
     // Additional route untuk filter atau pencarian transaksi

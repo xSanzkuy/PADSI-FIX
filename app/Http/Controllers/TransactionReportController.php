@@ -27,7 +27,7 @@ class TransactionReportController extends Controller
         }
 
         // Dapatkan hasil transaksi
-        $transactions = $transactions->get();
+        $transactions = $transactions->paginate(10);
 
         return view('reports.index', compact('transactions', 'startDate', 'endDate'));
     }

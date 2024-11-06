@@ -31,7 +31,7 @@ class ProductController extends Controller
 {
     // Validasi input
     $request->validate([
-        'nama_produk' => 'required|string|max:255', // Pastikan konsisten dengan form
+        'nama_produk' => 'required|string|max:255|unique:products,nama_produk', // Pastikan konsisten dengan form
         'stok' => 'required|integer|min:0',
         'harga' => 'required|numeric|min:0',
         'gambar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -76,7 +76,7 @@ class ProductController extends Controller
     {
         // Validasi input
         $request->validate([
-            'nama_produk' => 'required|string|max:255',
+            'nama_produk' => 'required|string|max:255|unique:products,nama_produk',
             'stok' => 'required|integer|min:0',
             'harga' => 'required|numeric|min:0',
             'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -120,3 +120,4 @@ class ProductController extends Controller
         }
     }
 }
+    

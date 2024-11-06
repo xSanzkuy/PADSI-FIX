@@ -16,24 +16,28 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-    <div class="d-flex justify-content-between mb-4">
-        <h3 class="fw-bold">Daftar Transaksi</h3>
-        <a href="{{ route('transactions.create') }}" class="btn btn-success btn-lg" style="border-radius: 50px; padding: 10px 30px; box-shadow: 0px 4px 10px rgba(0, 123, 255, 0.2); transition: all 0.3s;"><i class="fas fa-plus-circle"></i> Tambah Transaksi</a>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold page-title">📋 Daftar Transaksi</h3>
+        <a href="{{ route('transactions.create') }}" class="btn btn-add shadow-lg rounded-pill px-4 py-2">
+            <i class="fas fa-plus-circle me-2"></i> Tambah Transaksi
+        </a>
     </div>
-    <div class="card shadow-lg mb-4">
-        <div class="card-header bg-primary text-white text-center">
-            <h4>Daftar Transaksi</h4>
+
+    <div class="card shadow-lg mb-4 border-0 rounded-lg">
+        <div class="card-header text-white text-center table-header">
+            <h4 class="mb-0">Daftar Transaksi</h4>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
             @if($transactions->isEmpty())
                 <div class="alert alert-warning text-center">
                     Tidak ada transaksi yang ditemukan.
                 </div>
             @else
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
+                    <table class="table table-bordered table-hover align-middle">
                         <thead class="bg-light">
-                            <tr class="text-center">
+                            <tr class="text-center table-head-row">
                                 <th>ID Transaksi</th>
                                 <th>Tanggal</th>
                                 <th>Pegawai</th>
@@ -49,21 +53,26 @@
                                     <td class="text-center">{{ $transaction->id }}</td>
                                     <td>{{ $transaction->tanggal }}</td>
                                     <td>{{ $transaction->pegawai ? $transaction->pegawai->nama : 'Pegawai tidak tersedia' }}</td>
-                                    <td>Rp {{ number_format($transaction->total_bayar, 0, ',', '.') }}</td>
-                                    <td>Rp {{ number_format($transaction->nominal, 0, ',', '.') }}</td>
-                                    <td>Rp {{ number_format($transaction->kembalian, 0, ',', '.') }}</td>
+                                    <td class="text-end">Rp {{ number_format($transaction->total_bayar, 0, ',', '.') }}</td>
+                                    <td class="text-end">Rp {{ number_format($transaction->nominal, 0, ',', '.') }}</td>
+                                    <td class="text-end">Rp {{ number_format($transaction->kembalian, 0, ',', '.') }}</td>
                                     <td class="text-center">
-                                        <a href="{{ route('transactions.details', $transaction->id) }}" class="btn btn-info btn-sm me-2" style="border-radius: 50px; box-shadow: 0px 4px 8px rgba(0, 123, 255, 0.1); transition: all 0.3s;"><i class="fas fa-eye"></i> Detail</a>
-                                        <form action="{{ route('transactions.destroy', $transaction->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus transaksi ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" style="border-radius: 50px; box-shadow: 0px 4px 8px rgba(255, 0, 0, 0.1); transition: all 0.3s;"><i class="fas fa-trash-alt"></i> Hapus</button>
-                                        </form>
+                                        <a href="{{ route('transactions.details', $transaction->id) }}" class="btn btn-info btn-sm me-2 shadow-sm rounded-pill">
+                                            <i class="fas fa-eye"></i> Detail
+                                        </a>
+                                        <a href="{{ route('transactions.print', $transaction->id) }}" class="btn btn-primary btn-sm shadow-sm rounded-pill" target="_blank">
+                                            <i class="fas fa-print"></i> Cetak
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $transactions->links() }}
                 </div>
             @endif
         </div>

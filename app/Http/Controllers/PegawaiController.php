@@ -19,18 +19,17 @@ class PegawaiController extends Controller
             $search = $request->input('search');
             $pegawai = Pegawai::with('role')
                 ->when($search, function ($query, $search) {
-                    return $query->where('nama', 'like', "%{$search}%")
-                                 ->orWhere('email', 'like', "%{$search}%")
-                                 ->orWhere('alamat', 'like', "%{$search}%");
+                    return $query->where('nama', 'like', "%{$search}%"); // Hanya mencari berdasarkan nama
                 })
                 ->get(); // Mengambil semua pegawai dengan relasi role
-
+    
             return view('pegawai.index', compact('pegawai'));
         } catch (Exception $e) {
             Log::error('Error saat mengambil data pegawai: ' . $e->getMessage());
             return redirect()->back()->withErrors('Terjadi kesalahan saat mengambil data pegawai, silakan coba lagi.');
         }
     }
+    
 
     // Fungsi untuk menampilkan form tambah pegawai
     public function create()
@@ -97,35 +96,51 @@ class PegawaiController extends Controller
     // Fungsi untuk memperbarui data pegawai
     public function update(Request $request, $id)
     {
+        // Ambil data pegawai yang sedang diedit
+        $pegawai = Pegawai::findOrFail($id);
+    
+        // Ambil ID user yang benar untuk pengecualian di validasi `users`
+        $userId = $pegawai->user ? $pegawai->user->id : null;
+    
+        // Validasi dengan pengecualian ID user yang benar
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:pegawai,email,' . $id . '|unique:users,email,' . $id,
+            'email' => [
+                'required', 
+                'email', 
+                'unique:pegawai,email,' . $pegawai->id,
+                'unique:users,email,' . $userId
+            ],
             'alamat' => 'required|string|max:255',
             'id_role' => 'required|exists:roles,id',
         ]);
-
+    
         try {
-            $pegawai = Pegawai::findOrFail($id);
+            // Update data pegawai
             $pegawai->update($request->only(['nama', 'email', 'alamat', 'id_role']));
-
-            // Update juga role di akun user terkait jika ada
+    
+            // Update data user terkait
             if ($pegawai->user) {
-                $pegawai->user->update(['email' => $request->email]);
-
+                // Update email dan username pada akun pengguna
+                $pegawai->user->update([
+                    'email' => $request->email,
+                    'username' => strtolower(str_replace(' ', '_', $request->nama)) // Buat username baru dari nama yang diperbarui
+                ]);
+    
                 // Update role user jika diubah
                 $role = Role::find($request->id_role);
                 if ($role) {
-                    $pegawai->user->roles()->sync([$role->id]); // Update role di tabel pivot
+                    $pegawai->user->roles()->sync([$role->id]);
                 }
             }
-
+    
             return redirect()->route('pegawai.index')->with('success', 'Pegawai berhasil diperbarui.');
         } catch (Exception $e) {
             Log::error('Error saat memperbarui pegawai: ' . $e->getMessage());
             return redirect()->back()->withErrors('Terjadi kesalahan saat memperbarui data pegawai, silakan coba lagi.');
         }
     }
-
+    
     // Fungsi untuk menghapus pegawai
     public function destroy($id)
     {

@@ -14,13 +14,10 @@ class CreatePegawaiTable extends Migration
             $table->string('email')->unique();
             $table->string('alamat');
             $table->unsignedBigInteger('id_role');
+            $table->unsignedBigInteger('user_id')->nullable()->after('id'); // Tambahkan kolom user_id
             $table->foreign('id_role')->references('id')->on('roles')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes(); 
         });
     }
-
-    public function down()
-    {
-        Schema::dropIfExists('pegawai');
     }
-}

@@ -46,103 +46,108 @@ class TransactionController extends Controller
     }
 
     public function store(Request $request)
-{
-    // Validasi input transaksi
-    $request->validate([
-        'pegawai_id' => 'required|exists:pegawai,id',
-        'tanggal' => 'required|date',
-        'nominal' => 'required|numeric|min:0',
-        'member_id' => 'nullable|exists:members,id', // Validasi member_id jika ada
-        'items' => 'required|array|min:1',
-        'items.*.product_id' => 'required|exists:products,id',
-        'items.*.jumlah' => 'required|integer|min:1',
-    ]);
+    {
+        // Validasi input transaksi
+        $request->validate([
+            'pegawai_id' => 'required|exists:pegawai,id',
+            'tanggal' => 'required|date',
+            'nominal' => 'required|numeric|min:0',
+            'member_id' => 'nullable|exists:members,id', // Validasi member_id jika ada
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.jumlah' => 'required|integer|min:1',
+        ]);
 
-    DB::beginTransaction();
+        DB::beginTransaction();
 
-    try {
-        // Inisialisasi transaksi baru
-        $transaction = new Transaction();
-        $transaction->tanggal = $request->input('tanggal');
-        $transaction->pegawai_id = $request->pegawai_id;
-        $transaction->telp_pelanggan = $request->telp_pelanggan; // Boleh null
-        $transaction->nominal = $request->nominal;
-        $transaction->member_id = $request->member_id; // Ambil langsung dari request
+        try {
+            // Ambil data pegawai untuk membuat ID Transaksi custom
+            $pegawai = Pegawai::findOrFail($request->pegawai_id);
 
-        // Hitung total bayar berdasarkan item yang dibeli
-        $totalBayar = 0;
-        foreach ($request->items as $item) {
-            $product = Product::findOrFail($item['product_id']);
+            // Membuat ID Transaksi dengan format: nama pegawai + timestamp
+            $pegawaiNameSlug = str_replace(' ', '_', strtoupper($pegawai->nama));
+            $formattedDateTime = Carbon::now()->format('Ymd_His');
+            $customTransactionId = "{$pegawaiNameSlug}_{$formattedDateTime}";
 
-            // Cek apakah stok mencukupi
-            if ($product->stok < $item['jumlah']) {
-                throw new \Exception("Stok produk {$product->nama_produk} tidak mencukupi.");
+            // Inisialisasi transaksi baru dengan ID kustom
+            $transaction = new Transaction();
+            $transaction->id = $customTransactionId; // Set custom ID
+            $transaction->tanggal = $request->input('tanggal');
+            $transaction->pegawai_id = $request->pegawai_id;
+            $transaction->telp_pelanggan = $request->telp_pelanggan; // Boleh null
+            $transaction->nominal = $request->nominal;
+            $transaction->member_id = $request->member_id;
+
+            // Hitung total bayar berdasarkan item yang dibeli
+            $totalBayar = 0;
+            foreach ($request->items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+
+                // Cek apakah stok mencukupi
+                if ($product->stok < $item['jumlah']) {
+                    throw new \Exception("Stok produk {$product->nama_produk} tidak mencukupi.");
+                }
+
+                $subtotal = $product->harga * $item['jumlah'];
+                $totalBayar += $subtotal;
             }
 
-            $subtotal = $product->harga * $item['jumlah'];
-            $totalBayar += $subtotal;
-        }
+            // Terapkan diskon berdasarkan tingkat member jika ada
+            $member = null;
+            if ($transaction->member_id) {
+                $member = Member::findOrFail($transaction->member_id);
+                $diskon = 0;
 
-        // Terapkan diskon berdasarkan tingkat member jika ada
-        if ($transaction->member_id) {
-            $member = Member::findOrFail($transaction->member_id);
-            $diskon = 0;
+                // Menentukan diskon berdasarkan tingkat loyalitas member
+                switch ($member->tingkat) {
+                    case 'bronze': $diskon = 0.05; break;
+                    case 'silver': $diskon = 0.10; break;
+                    case 'gold': $diskon = 0.15; break;
+                }
 
-            switch ($member->tingkat) {
-                case 'bronze':
-                    $diskon = 0.05; // 5% diskon untuk Bronze
-                    break;
-                case 'silver':
-                    $diskon = 0.10; // 10% diskon untuk Silver
-                    break;
-                case 'gold':
-                    $diskon = 0.15; // 15% diskon untuk Gold
-                    break;
+                // Mengurangi total bayar dengan diskon
+                $totalBayar -= $totalBayar * $diskon;
             }
 
-            $totalBayar -= $totalBayar * $diskon; // Terapkan diskon
+            // Cek apakah nominal cukup untuk total bayar
+            if ($request->nominal < $totalBayar) {
+                throw new \Exception("Nominal pembayaran tidak cukup untuk total transaksi.");
+            }
+
+            // Set nilai total bayar dan kembalian
+            $transaction->total_bayar = $totalBayar;
+            $transaction->kembalian = $transaction->nominal - $transaction->total_bayar;
+            $transaction->save(); // Simpan transaksi
+
+            // Simpan detail transaksi dan update stok produk
+            foreach ($request->items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+                $product->stok -= $item['jumlah'];
+                $product->save();
+
+                TransactionDetail::create([
+                    'transaction_id' => $transaction->id,
+                    'product_id' => $product->id,
+                    'jumlah' => $item['jumlah'],
+                    'harga_satuan' => $product->harga,
+                    'subtotal' => $product->harga * $item['jumlah'],
+                ]);
+            }
+
+            // Menambah total transaksi dan cek upgrade tingkat loyalitas jika member terkait
+            if ($member) {
+                $member->addTransaction($totalBayar); // Menambah total transaksi dan cek upgrade tingkat
+            }
+
+            DB::commit();
+
+            return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
-
-        // Cek apakah nominal cukup untuk total bayar
-        if ($request->nominal < $totalBayar) {
-            throw new \Exception("Nominal pembayaran tidak cukup untuk total transaksi.");
-        }
-
-        $transaction->total_bayar = $totalBayar;
-        $transaction->kembalian = $transaction->nominal - $transaction->total_bayar;
-        $transaction->save(); // Simpan transaksi
-
-        // Simpan detail transaksi dan update stok produk
-        foreach ($request->items as $item) {
-            $product = Product::findOrFail($item['product_id']);
-            $product->stok -= $item['jumlah'];
-            $product->save();
-
-            TransactionDetail::create([
-                'transaction_id' => $transaction->id,
-                'product_id' => $product->id,
-                'jumlah' => $item['jumlah'],
-                'harga_satuan' => $product->harga,
-                'subtotal' => $product->harga * $item['jumlah'],
-            ]);
-        }
-
-        // Update status loyalitas member jika ada
-        if ($member) {
-            $member->addTransaction($totalBayar); // Menambah total transaksi dan cek upgrade tingkat
-        }
-
-        DB::commit();
-
-        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil ditambahkan.');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
     }
-}
 
-    
-    
     public function details($id)
     {
         // Mengambil data transaksi berdasarkan ID beserta relasi detail transaksi dan produk terkait
@@ -253,21 +258,9 @@ class TransactionController extends Controller
                 ]);
             }
 
-            // Update status loyalitas member jika ada member yang terkait
+            // Menambah total transaksi dan cek upgrade tingkat loyalitas jika member terkait
             if ($member) {
-                // Update total transaksi member
-                $member->total_transaksi += $totalBayar;
-
-                // Tentukan tingkat loyalitas berdasarkan total transaksi
-                if ($member->total_transaksi >= 500000) {
-                    $member->tingkat = 'gold';
-                } elseif ($member->total_transaksi >= 250000) {
-                    $member->tingkat = 'silver';
-                } elseif ($member->total_transaksi >= 100000) {
-                    $member->tingkat = 'bronze';
-                }
-
-                $member->save();
+                $member->addTransaction($totalBayar); // Menambah total transaksi dan cek upgrade tingkat
             }
 
             DB::commit(); // Commit transaction jika semua proses berhasil
@@ -279,15 +272,15 @@ class TransactionController extends Controller
             return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
     }
+
     /**
- * Display the print view for a specific transaction.
- */
-public function print($id)
-{
-    // Mengambil data transaksi berdasarkan ID beserta relasi detail transaksi dan produk terkait
-    $transaction = Transaction::with('details.product', 'pegawai', 'member')->findOrFail($id);
+     * Display the print view for a specific transaction.
+     */
+    public function print($id)
+    {
+        // Mengambil data transaksi berdasarkan ID beserta relasi detail transaksi dan produk terkait
+        $transaction = Transaction::with('details.product', 'pegawai', 'member')->findOrFail($id);
 
-    return view('transactions.print', compact('transaction'));
-}
-
+        return view('transactions.print', compact('transaction'));
+    }
 }

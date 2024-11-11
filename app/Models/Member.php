@@ -17,6 +17,11 @@ class Member extends Model
         'gold' => 'Gold',
     ];
 
+    // Batasan untuk setiap tingkat loyalitas
+    const LOYALTY_BRONZE = 100000;
+    const LOYALTY_SILVER = 250000;
+    const LOYALTY_GOLD = 500000;
+
     public function transactions()
     {
         return $this->hasMany(Transaction::class, 'member_id');
@@ -31,7 +36,7 @@ class Member extends Model
         $this->total_transaksi += $nominal;
         $this->save();
 
-        //   Debugging: Tambahkan log untuk memastikan addTransaction berjalan
+        // Debugging log untuk memastikan addTransaction berjalan
         \Log::info("Total transaksi setelah penambahan: {$this->total_transaksi} untuk member ID: {$this->id}");
 
         // Lakukan pengecekan dan upgrade tingkat jika memenuhi syarat
@@ -43,17 +48,17 @@ class Member extends Model
      */
     public function upgradeLoyaltyLevel()
     {
-        if ($this->total_transaksi >= 500000 && $this->tingkat !== 'gold') {
+        if ($this->total_transaksi >= self::LOYALTY_GOLD && $this->tingkat !== 'gold') {
             $this->tingkat = 'gold';
             \Log::info("Tingkat loyalitas di-upgrade ke: gold untuk member ID: {$this->id}");
-        } elseif ($this->total_transaksi >= 250000 && $this->tingkat !== 'silver') {
+        } elseif ($this->total_transaksi >= self::LOYALTY_SILVER && $this->tingkat !== 'silver') {
             $this->tingkat = 'silver';
             \Log::info("Tingkat loyalitas di-upgrade ke: silver untuk member ID: {$this->id}");
-        } elseif ($this->total_transaksi >= 100000 && $this->tingkat !== 'bronze') {
+        } elseif ($this->total_transaksi >= self::LOYALTY_BRONZE && $this->tingkat !== 'bronze') {
             $this->tingkat = 'bronze';
             \Log::info("Tingkat loyalitas di-upgrade ke: bronze untuk member ID: {$this->id}");
         }
 
-        $this->save(); // Simpan perubahan tingkat
+        $this->save(); // Simpan perubahan tingkat loyalitas
     }
 }

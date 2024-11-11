@@ -6,8 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
 {
+    // Nonaktifkan auto-increment dan set tipe key sebagai string
+    public $incrementing = false; // Menonaktifkan auto-increment
+    protected $keyType = 'string'; // Mengatur tipe primary key menjadi string
+
     protected $fillable = [
-        'tanggal', 'pegawai_id', 'telp_pelanggan', 'total_bayar', 'nominal', 'kembalian'
+        'id', 'tanggal', 'pegawai_id', 'telp_pelanggan', 'total_bayar', 'nominal', 'kembalian'
     ];
 
     public function details()
@@ -19,9 +23,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(Pegawai::class);
     }
-    public function member()
-{
-    return $this->belongsTo(Member::class);
-}
 
+    public function member()
+    {
+        return $this->belongsTo(Member::class);
+    }
 }

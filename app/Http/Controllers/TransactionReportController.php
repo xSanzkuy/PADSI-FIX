@@ -13,10 +13,11 @@ class TransactionReportController extends Controller
         // Mengambil input tanggal dari form
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-
-        // Mengambil semua transaksi beserta relasi pegawai dan detail produknya
-        $transactions = Transaction::with('details.product', 'pegawai');
-
+        $memberLevel = $request->input('member_level'); // Menambahkan filter tingkat member
+    
+        // Mengambil semua transaksi beserta relasi pegawai, detail produk, dan member
+        $transactions = Transaction::with('details.product', 'pegawai', 'member');
+    
         // Jika ada input tanggal, tambahkan filter berdasarkan tanggal
         if ($startDate && $endDate) {
             $transactions = $transactions->whereBetween('tanggal', [$startDate, $endDate]);
@@ -25,13 +26,20 @@ class TransactionReportController extends Controller
         } elseif ($endDate) {
             $transactions = $transactions->whereDate('tanggal', '<=', $endDate);
         }
-
-        // Dapatkan hasil transaksi
+    
+        // Jika ada filter tingkat member, tambahkan filter ini
+        if ($memberLevel) {
+            $transactions = $transactions->whereHas('member', function($query) use ($memberLevel) {
+                $query->where('tingkat', $memberLevel);
+            });
+        }
+    
+        // Dapatkan hasil transaksi dengan paginasi
         $transactions = $transactions->paginate(10);
-
-        return view('reports.index', compact('transactions', 'startDate', 'endDate'));
+    
+        return view('reports.index', compact('transactions', 'startDate', 'endDate', 'memberLevel'));
     }
-
+    
     // Fungsi untuk export PDF
     public function exportPDF(Request $request)
     {

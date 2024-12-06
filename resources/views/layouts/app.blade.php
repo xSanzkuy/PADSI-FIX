@@ -18,10 +18,16 @@
 
     <!-- Scripts -->
     <script src="{{ mix('js/app.js') }}" defer></script>
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <!-- Optional Additional Styles -->
+    @stack('styles')
 </head>
 <body style="background-color: #1a1a1a;">
     <div id="app">
-        <nav class="navbar navbar-expand-md" style="background-color: #2d2d2d;">
+        <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #2d2d2d;">
             <div class="container">
                 <!-- Logo and Application Name -->
                 <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
@@ -31,13 +37,15 @@
                 
                 <!-- Navbar Toggler -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon" style="color: #ff6347;"></span>
+                    <span class="navbar-toggler-icon"></span>
                 </button>   
 
                 <!-- Navbar Content -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav me-auto"></ul>
+                    <ul class="navbar-nav me-auto">
+                        <!-- Add navigation links here if needed -->
+                    </ul>
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
@@ -86,5 +94,8 @@
             @yield('content')
         </main>
     </div>
+
+    <!-- Optional Additional Scripts -->
+    @stack('scripts')
 </body>
 </html>

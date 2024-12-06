@@ -29,10 +29,16 @@ class TransactionReportController extends Controller
     
         // Jika ada filter tingkat member, tambahkan filter ini
         if ($memberLevel) {
-            $transactions = $transactions->whereHas('member', function($query) use ($memberLevel) {
-                $query->where('tingkat', $memberLevel);
-            });
-        }
+            if ($memberLevel === 'N/A') {
+                // Filter transaksi tanpa member
+                $transactions = $transactions->whereDoesntHave('member');
+            } else {
+                // Filter transaksi berdasarkan tingkat member
+                $transactions = $transactions->whereHas('member', function ($query) use ($memberLevel) {
+                    $query->where('tingkat', $memberLevel);
+                });
+            }
+        }        
     
         // Dapatkan hasil transaksi dengan paginasi
         $transactions = $transactions->paginate(10);
@@ -43,13 +49,14 @@ class TransactionReportController extends Controller
     // Fungsi untuk export PDF
     public function exportPDF(Request $request)
     {
-        // Mengambil input tanggal dari form
+        // Mengambil input filter dari request
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-
-        // Mengambil semua transaksi beserta relasi pegawai dan detail produknya
-        $transactions = Transaction::with('details.product', 'pegawai');
-
+        $memberLevel = $request->input('member_level'); // Tambahkan filter tingkat member
+    
+        // Query transaksi dengan relasi pegawai, detail produk, dan member
+        $transactions = Transaction::with('details.product', 'pegawai', 'member');
+    
         // Jika ada input tanggal, tambahkan filter berdasarkan tanggal
         if ($startDate && $endDate) {
             $transactions = $transactions->whereBetween('tanggal', [$startDate, $endDate]);
@@ -58,14 +65,21 @@ class TransactionReportController extends Controller
         } elseif ($endDate) {
             $transactions = $transactions->whereDate('tanggal', '<=', $endDate);
         }
-
-        // Dapatkan hasil transaksi
+    
+        // Jika ada filter tingkat member, tambahkan filter ini
+        if ($memberLevel) {
+            $transactions = $transactions->whereHas('member', function ($query) use ($memberLevel) {
+                $query->where('tingkat', $memberLevel);
+            });
+        }
+    
+        // Ambil semua transaksi yang sudah difilter
         $transactions = $transactions->get();
-
-        // Memuat view untuk PDF dan mengirimkan data transaksi
-        $pdf = PDF::loadView('reports.laporan_pdf', compact('transactions', 'startDate', 'endDate'));
-
+    
+        // Memuat view untuk PDF dan mengirimkan data transaksi beserta filter
+        $pdf = PDF::loadView('reports.laporan_pdf', compact('transactions', 'startDate', 'endDate', 'memberLevel'));
+    
         // Mengunduh file PDF
         return $pdf->download('laporan-transaksi.pdf');
     }
-}
+}    

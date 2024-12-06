@@ -38,15 +38,17 @@
                             </div>
                             <h5 class="card-title fw-bold text-primary">{{ ucfirst($member->nama) }}</h5>
                             <p class="card-text text-muted">Nomor HP: <span class="fw-bold">{{ $member->no_hp }}</span></p>
-                            <p class="card-text">Tingkat: <span class="badge bg-secondary">{{ $member->tingkat ?? 'Tidak Ada' }}</span></p>
+                            <p class="card-text">Tingkat: 
+                                <span 
+                                    class="badge" 
+                                    style="background-color: {{ $member->tingkat == 'gold' ? '#FFD700' : ($member->tingkat == 'silver' ? '#C0C0C0' : '#CD7F32') }}; color: #000;">
+                                    {{ $member->tingkat ?? 'Tidak Ada' }}
+                                </span>
+                            </p>
                             <p class="card-text">Total Transaksi: <span class="fw-bold">Rp {{ number_format($member->total_transaksi, 0, ',', '.') }}</span></p>
                             <div class="d-flex justify-content-between mt-4">
                                 <a href="{{ route('member.edit', $member->id) }}" class="btn btn-warning btn-sm text-white shadow-sm">Edit</a>
-                                <form action="{{ route('member.destroy', $member->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm shadow-sm" onclick="return confirm('Yakin ingin menghapus member ini?')">Hapus</button>
-                                </form>
+                                <button type="button" class="btn btn-danger btn-sm shadow-sm" onclick="confirmDelete({{ $member->id }})">Hapus</button>
                             </div>
                         </div>
                     </div>
@@ -55,6 +57,62 @@
         </div>
     @endif
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(memberId) {
+        Swal.fire({
+            title: 'Yakin ingin menghapus?',
+            text: "Member ini tidak dapat dikembalikan setelah dihapus!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d62828',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/master/member/${memberId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                        "Accept": "application/json"
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: 'Member telah dihapus.',
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Gagal!',
+                            text: 'Terjadi kesalahan saat menghapus member.',
+                            icon: 'error',
+                            confirmButtonColor: '#d62828'
+                        });
+                    }
+                })
+                .catch(() => {
+                    Swal.fire({
+                        title: 'Gagal!',
+                        text: 'Terjadi kesalahan pada server.',
+                        icon: 'error',
+                        confirmButtonColor: '#d62828'
+                    });
+                });
+            }
+        });
+    }
+</script>
+@endpush
 
 <style>
     body {

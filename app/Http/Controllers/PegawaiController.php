@@ -143,21 +143,25 @@ class PegawaiController extends Controller
     
     // Fungsi untuk menghapus pegawai
     public function destroy($id)
-    {
-        try {
-            $pegawai = Pegawai::findOrFail($id);
+{
+    try {
+        // Cari data pegawai berdasarkan ID
+        $pegawai = Pegawai::findOrFail($id);
 
-            // Hapus user terkait jika ada
-            if ($pegawai->user) {
-                $pegawai->user->delete();
-            }
-
-            $pegawai->delete(); // Menghapus pegawai
-
-            return redirect()->route('pegawai.index')->with('success', 'Pegawai berhasil dihapus.');
-        } catch (Exception $e) {
-            Log::error('Error saat menghapus pegawai: ' . $e->getMessage());
-            return redirect()->route('pegawai.index')->withErrors('Terjadi kesalahan saat menghapus pegawai, silakan coba lagi.');
+        // Hapus user terkait jika ada
+        if ($pegawai->user) {
+            $pegawai->user->delete(); // Menghapus data user terkait
         }
+
+        $pegawai->delete(); // Menghapus data pegawai
+
+        // Kembalikan respons JSON untuk notifikasi sukses
+        return response()->json(['success' => true, 'message' => 'Pegawai berhasil dihapus.']);
+    } catch (Exception $e) {
+        Log::error('Error saat menghapus pegawai: ' . $e->getMessage());
+        
+        // Kembalikan respons JSON untuk notifikasi gagal
+        return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menghapus pegawai.'], 500);
     }
+}
 }

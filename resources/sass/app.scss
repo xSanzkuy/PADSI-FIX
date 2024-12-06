@@ -1,722 +1,355 @@
+// Import Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
+// Variabel Global
+$primary-color: #003366;  // Biru Tua
+$secondary-color: #2d6a4f; // Hijau
+$action-red: #b22222;      // Merah
+$light-gray: #f8f9fa;      // Abu-abu terang
+$hover-light: #f0f0f0;     // Abu-abu hover
+$font-family-base: 'Arial', sans-serif;
+$font-size-base: 16px;
+$transition: all 0.3s ease;
 
-// Styling Umum
-body {
-    font-family: 'Arial', sans-serif; // Font umum
-    background-color: #f8f9fa; // Warna latar belakang
-    margin: 0; // Menghilangkan margin default
-    padding: 0; // Menghilangkan padding default
-    overflow: hidden; // Menonaktifkan scroll
+// Reset Styling
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: $font-family-base;
+    font-size: $font-size-base;
+    background-color: $light-gray;
+    overflow-y: hidden; // Nonaktifkan scroll global kecuali konten
 }
 
+// Global Container dan Row
 .container-fluid {
-    height: 100vh; // Tinggi penuh
-    display: flex;
-    flex-direction: column; // Mengatur arah kolom
-    padding: 20px; // Padding di dalam container
+    height: calc(100vh - 56px); // Menyesuaikan tinggi dengan navbar
+    padding: 20px;
+    overflow-y: auto; // Scroll hanya pada konten
 }
 
 .row {
-    flex: 1; // Menggunakan flexbox agar baris bisa fleksibel
+    flex-wrap: wrap; // Bungkus baris jika diperlukan
+    flex: 1;
 }
 
-// Kartu
+// Card Styling
 .card {
-    border-radius: 10px; // Sudut yang lebih membulat
-    margin-bottom: 20px; // Jarak antar kartu
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); // Tambahkan bayangan
-    transition: transform 0.2s; // Transisi saat hover
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: $transition;
+    margin-bottom: 20px;
+
+    &:hover {
+        transform: scale(1.02);
+    }
 }
 
-.card:hover {
-    transform: scale(1.02); // Efek zoom saat hover
+.card-header {
+    background-color: $primary-color;
+    color: #fff;
+    border-radius: 10px 10px 0 0;
 }
 
-// Judul Kartu
 .card-title {
-    font-weight: bold; // Cetak tebal
-    color: #333; // Warna teks judul
-    font-size: 1.5rem; // Ukuran font judul
+    font-weight: bold;
+    color: $primary-color;
+    font-size: 1.5rem;
 }
 
-// Tabel
+// Tombol
+.btn {
+    border-radius: 5px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: $transition;
+
+    &-primary {
+        background-color: $primary-color;
+        color: #fff;
+        border: none;
+
+        &:hover {
+            background-color: darken($primary-color, 10%);
+        }
+    }
+
+    &-success {
+        background-color: $secondary-color;
+        color: #fff;
+        border: none;
+
+        &:hover {
+            background-color: darken($secondary-color, 10%);
+        }
+    }
+
+    &-danger {
+        background-color: $action-red;
+        color: #fff;
+        border: none;
+
+        &:hover {
+            background-color: darken($action-red, 10%);
+        }
+    }
+
+    &-add-transaction {
+        background-color: $primary-color; // Sesuai tombol cetak
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+
+        &:hover {
+            background-color: darken($primary-color, 10%);
+        }
+    }
+
+    &-export {
+        background-color: $action-red;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        border-radius: 8px;
+
+        &:hover {
+            background-color: darken($action-red, 10%);
+        }
+    }
+}
+
+// Tabel Styling
 .table {
-    margin-bottom: 0; // Menghapus margin bawah tabel
+    thead {
+        background-color: $light-gray;
+        color: $primary-color;
+        font-weight: bold;
+    }
+
+    tbody tr:hover {
+        background-color: $hover-light;
+    }
+
+    th, td {
+        vertical-align: middle;
+        border: 1px solid #dee2e6;
+    }
 }
 
-.table-hover tbody tr:hover {
-    background-color: rgba(0, 123, 255, 0.1); // Efek hover untuk tabel
-}
+// Pagination Styling
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
 
-.table th, .table td {
-    vertical-align: middle; // Rata tengah untuk tabel
-}
+    .page-item {
+        margin: 0 5px;
 
-// Item Daftar
-.list-group-item {
-    border: none; // Menghapus garis batas
-    transition: background-color 0.3s; // Efek transisi untuk item daftar
-}
+        &.active .page-link {
+            background-color: $primary-color; // Warna aktif biru tua
+            border-color: $primary-color;
+            color: #fff;
+            font-weight: bold;
+        }
 
-.list-group-item:hover {
-    background-color: rgba(0, 123, 255, 0.1); // Efek hover untuk item daftar
-}
+        .page-link {
+            background-color: $light-gray; // Warna default abu-abu terang
+            color: $primary-color;
+            border: 1px solid $primary-color;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 14px;
+            transition: $transition;
 
-// Badge
-.badge {
-    background-color: #007bff; // Mengatur warna badge
-}
-
-// Tombol Logout
-.btn-danger {
-    background-color: #dc3545; // Warna tombol logout
-    border: none; // Menghapus border
-}
-
-.btn-danger:hover {
-    background-color: #c82333; // Warna saat hover
+            &:hover {
+                background-color: $hover-light; // Warna hover abu-abu hover
+                color: $primary-color;
+                border-color: darken($primary-color, 10%);
+            }
+        }
+    }
 }
 
 // Grafik
 canvas {
-    max-width: 100%; // Membatasi lebar grafik
-    height: 400px; // Tinggi grafik
+    max-width: 100%;
+    height: 400px;
 }
 
-// Aturan Responsif
+#transactionChart, #productChart {
+    max-height: 300px;
+}
+
+// Halaman Login
+body.login-page {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+        url('../images/login.jpg') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.login-title {
+    font-size: 26px;
+    font-weight: bold;
+    color: $primary-color;
+    margin-bottom: 20px;
+}
+
+.form-control {
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-login {
+    background-color: $action-red;
+    color: #fff;
+    border: none;
+
+    &:hover {
+        background-color: darken($action-red, 10%);
+    }
+}
+
+.forgot-link {
+    color: $action-red;
+
+    &:hover {
+        color: lighten($action-red, 10%);
+    }
+}
+
+// Halaman Data Master
+body.master-page {
+    background: url('../images/master-bg.jpg') no-repeat center center;
+    background-size: cover;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; // Konten mulai dari atas
+    align-items: center; // Konten di tengah secara horizontal
+}
+
+.master-container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 20px;
+    width: 90%;
+    max-width: 1200px;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+// Halaman Laporan Transaksi
+body.report-page {
+    .report-header {
+        color: $primary-color;
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .filter-section {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 15px;
+
+        .form-control {
+            border-radius: 8px;
+        }
+    }
+}
+
+// Responsif
 @media (max-width: 768px) {
-    .col-md-3, .col-md-8, .col-md-4 {
-        flex: 1 1 100%; // Memastikan kolom mengambil lebar penuh di layar kecil
-        max-width: 100%; // Menghindari overflow
+    .container-fluid {
+        padding: 10px;
+    }
+
+    .card {
+        margin-bottom: 15px;
+    }
+
+    .btn {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+
+        .page-item {
+            margin: 2px;
+
+            .page-link {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
     }
 }
 
-@media (min-width: 768px) {
-    .col-md-8 {
-        flex: 0 0 66.66667%; // Mengatur kolom utama menjadi dua pertiga
-        max-width: 66.66667%; // Mengatur lebar maksimum
-    }
+// Definisikan warna tier
+$gold-color: #ffd700; // Warna emas
+$silver-color: #c0c0c0; // Warna perak
+$bronze-color: #cd7f32; // Warna perunggu
 
-    .col-md-4 {
-        flex: 0 0 33.33333%; // Mengatur kolom samping menjadi sepertiga
-        max-width: 33.33333%; // Mengatur lebar maksimum
-    }
+.badge-tier {
+  &.gold {
+    background-color: $gold-color;
+    color: #fff;
+  }
+  &.silver {
+    background-color: $silver-color;
+    color: #000;
+  }
+  &.bronze {
+    background-color: $bronze-color;
+    color: #fff;
+  }
 }
 
-// Menyusun ulang gaya untuk grafik pie
-#productChart {
-    max-height: 400px; // Tinggi maksimum untuk grafik pie
-}
-
-
-
-
-// Global Styles
-body {
-    background-color: #f8f9fa; // Background color
-    font-family: 'Montserrat', sans-serif; // Font
-    margin: 0; // Remove default margin
-}
-
-.container-fluid {
-    padding: 20px; // Padding for container
-}
-
-.card {
-    border-radius: 10px; // Rounded corners
-    transition: transform 0.2s; // Add hover effect
-    margin-bottom: 20px; // Space between cards
-}
-
-.card:hover {
-    transform: scale(1.02); // Slight zoom on hover
-}
-
-.card-title {
-    font-weight: bold; // Bold title
-    color: #333; // Dark title color
-}
-
-// Chart heights
-#transactionChart {
-    max-height: 300px; // Height for transaction trends chart
-}
-
-#productChart {
-    max-height: 300px; // Height for product revenue distribution chart
-}
-
-// Responsive adjustments
-@media (max-width: 768px) {
-    .col-md-6 {
-        flex: 1 1 100%; // Full width on small screens
-        max-width: 100%; // Prevent overflow
-    }
+#wrapper {
+    min-height: 100vh;
+    display: flex;
 }
 
 html, body {
-  height: 100%;
-  margin: 0;
-  overflow: hidden; /* Nonaktifkan scroll */
+    height: 100%;
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(45deg, #ff9a9e, #fad0c4, #a1c4fd, #c2e9fb, #ff9a9e);
+    background-size: 200% 200%;
+    animation: waveGradient 3s infinite linear; /* Gelombang cepat */
 }
 
-.container-fluid {
-  height: calc(100vh - 56px); /* Menyesuaikan tinggi container dengan tinggi jendela dan navbar */
-  overflow-y: auto; /* Aktifkan scroll hanya pada konten jika diperlukan */
+/* Animasi gradient seperti gelombang */
+@keyframes waveGradient {
+    0% { background-position: 0% 50%; }
+    25% { background-position: 50% 50%; }
+    50% { background-position: 100% 50%; }
+    75% { background-position: 50% 100%; }
+    100% { background-position: 0% 50%; }
 }
 
-.row {
-  flex: 1; /* Mengatur row agar menggunakan space yang tersisa */
-  flex-wrap: wrap; /* Memungkinkan baris untuk membungkus jika diperlukan */
-}
-
-// Custom Styles for Transaction Page
-
-.text-primary {
-    color: #003366; /* Dark blue dari logo */
-}
-
-.bg-primary {
-    background-color: #003366; /* Dark blue */
-}
-
-.btn-success {
-    background-color: #2d6a4f; /* Hijau sesuai logo */
-    border: none;
-}
-
-.btn-danger {
-    background-color: #c1121f; /* Merah dari logo */
-    border: none;
-}
-
-.btn-info {
-    background-color: #003366; /* Dark blue */
-    color: #ffffff;
-}
-
-// Hover Effects
-.btn-success:hover,
-.btn-danger:hover,
-.btn-info:hover {
-    opacity: 0.85;
-    transform: scale(1.02);
-    transition: all 0.3s ease;
-}
-
-// Pagination
-.pagination .page-item.active .page-link {
-    background-color: #2d6a4f; /* Hijau */
-    border-color: #2d6a4f;
-}
-
-.pagination .page-link {
-    color: #003366; /* Dark blue */
-}
-
-.pagination .page-link:hover {
-    background-color: #c1121f; /* Merah */
-    color: #ffffff;
-}
-
-// Custom Card
-.card-header {
-    background-color: #003366;
-    border-bottom: none;
-}
-
-.card {
-    border-radius: 15px;
-}
-
-// Table
-.table thead {
-    background-color: #f8f9fa; /* Light background */
-    color: #003366; /* Dark blue text */
-}
-
-.table-bordered th, .table-bordered td {
-    border: 1px solid #dee2e6;
-}
-
-.table-hover tbody tr:hover {
-    background-color: rgba(0, 51, 102, 0.05); /* Light blue hover */
-}
-
-// Button Shadows
-.btn {
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-// Custom Styles for Transaction Page
-
-// Colors
-$text-primary: #003366; // Biru Tua
-$bg-primary: #003366;   // Biru Tua
-$btn-green: #2d6a4f;    // Hijau
-$btn-red: #b22222;      // Merah Tua
-$hover-light: #f0f0f0;  // Abu-abu Muda untuk efek hover
-
-// Typography
-.text-primary {
-    color: $text-primary;
-}
-
-.bg-primary {
-    background-color: $bg-primary;
-}
-
-// Button Styles
-.btn-success {
-    background-color: $btn-green;
-    border: none;
-    color: #fff;
-}
-
-.btn-danger {
-    background-color: $btn-red;
-    border: none;
-    color: #fff;
-}
-
-.btn-info {
-    background-color: $bg-primary;
-    color: #ffffff;
-}
-
-// Hover Effects
-.btn-success:hover,
-.btn-danger:hover,
-.btn-info:hover {
-    opacity: 0.9;
-    transform: scale(1.02);
-    transition: all 0.3s ease;
-}
-
-// Pagination
-.pagination .page-item.active .page-link {
-    background-color: $btn-green;
-    border-color: $btn-green;
-}
-
-.pagination .page-link {
-    color: $text-primary;
-}
-
-.pagination .page-link:hover {
-    background-color: $btn-red;
-    color: #ffffff;
-}
-
-// Custom Card
-.card-header {
-    background-color: $bg-primary;
-    color: #ffffff;
-    border-bottom: none;
-    border-radius: 10px 10px 0 0;
-}
-
-.card {
-    border-radius: 15px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-// Table
-.table thead {
-    background-color: #e3e3e3; /* Light gray for table header */
-    color: $text-primary; /* Dark blue text */
-}
-
-.table-bordered th, .table-bordered td {
-    border: 1px solid #dee2e6;
-}
-
-.table-hover tbody tr:hover {
-    background-color: $hover-light; /* Light hover effect */
-}
-
-// Button Shadows
-.btn {
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-// Alerts
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-// Colors based on Logo
-$primary-color: #003366;  // Dark Blue
-$secondary-color: #2d6a4f; // Green
-$action-red: #b22222;      // Red for Actions
-$background-light: #f8f9fa; // Light Background for headers
-$hover-light: #f0f0f0;      // Light hover color
-
-// Typography and Styling
-.page-title {
-    font-size: 2rem;
-    color: $secondary-color;
-    font-weight: bold;
+#wrapper {
+    min-height: 100vh;
     display: flex;
-    align-items: center;
 }
 
-.table-header {
-    background-color: $primary-color;
-    border-bottom: none;
-    color: #ffffff;
-    border-radius: 10px 10px 0 0;
-}
 
-// Table Styles
-.table-head-row th {
-    background-color: $background-light;
-    color: $primary-color;
-    font-weight: 600;
-}
 
-.table-hover tbody tr:hover {
-    background-color: $hover-light;
-}
-
-// Button Styles
-.btn-add {
-    background-color: $secondary-color;
-    color: #ffffff;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-    display: flex;
-    align-items: center;
-}
-
-.btn-add:hover {
-    background-color: darken($secondary-color, 10%);
-}
-
-.btn-info {
-    background-color: $primary-color;
-    color: #ffffff;
-    font-weight: bold;
-}
-
-.btn-danger {
-    background-color: $action-red;
-    color: #ffffff;
-    font-weight: bold;
-}
-
-// Pagination Styles
-.pagination .page-item.active .page-link {
-    background-color: $secondary-color;
-    border-color: $secondary-color;
-}
-
-.pagination .page-link {
-    color: $primary-color;
-}
-
-.pagination .page-link:hover {
-    background-color: $action-red;
-    color: #ffffff;
-}
-
-// Alerts
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-// Shadows and Border Radius
-.card {
-    border-radius: 15px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.btn {
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-// Custom Colors based on Logo
-$primary-color: #003366;  // Biru Tua
-$secondary-color: #2d6a4f; // Hijau untuk tombol simpan
-$action-red: #b22222;      // Merah untuk tombol hapus
-$light-gray: #f8f9fa;      // Abu-abu terang untuk latar belakang
-
-// Typography
-.text-primary-custom {
-    color: $primary-color;
-    font-size: 2.5rem;
-    font-weight: bold;
-}
-
-.text-secondary {
-    color: #6c757d;
-}
-
-// Button Styles
-.btn-outline-primary-custom {
-    color: $primary-color;
-    border-color: $primary-color;
-    font-weight: bold;
-    transition: all 0.3s ease;
-}
-
-.btn-outline-primary-custom:hover {
-    background-color: $primary-color;
-    color: #fff;
-}
-
-.btn-success-custom {
-    background-color: $secondary-color;
-    color: #ffffff;
-    font-weight: bold;
-    transition: all 0.3s ease;
-}
-
-.btn-success-custom:hover {
-    background-color: darken($secondary-color, 10%);
-}
-
-.btn-danger {
-    background-color: $action-red;
-    color: #ffffff;
-    font-weight: bold;
-}
-
-.btn-danger:hover {
-    background-color: darken($action-red, 10%);
-}
-
-// Card and Form Container
-.form-container {
-    background-color: #ffffff;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
-}
-
-// Input and Select Styles
-.form-control {
-    border-radius: 10px;
-    transition: box-shadow 0.3s ease;
-}
-
-.form-control:focus {
-    box-shadow: 0px 0px 10px rgba(50, 50, 150, 0.2);
-}
-
-// Card Style for Product Item
-.product-item {
-    border-radius: 10px;
-    background-color: $light-gray;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.img-thumbnail {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-}
-
-// Colors and Styles for Consistent Table Headers
-$primary-color: #003366; // Dark Blue
-$light-background: #e3e3e3; // Light Gray for Table Header
-
-.text-primary-custom {
-    color: $primary-color;
-    font-size: 2rem;
-    font-weight: bold;
-}
-
-.btn-primary-custom {
-    background-color: $primary-color;
-    color: #fff;
-    border: none;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
-
-.btn-primary-custom:hover {
-    background-color: darken($primary-color, 10%);
-    color: #fff;
-}
-
-.btn-danger {
-    background-color: $action-red;
-    color: #ffffff;
-    font-weight: bold;
-}
-
-// Card and Header Table Styling
-.table-header {
-    background-color: $light-background;
-    color: $primary-color;
-    font-weight: bold;
-}
-
-.card-header {
-    background-color: $primary-color;
-    color: #ffffff;
-    border-bottom: none;
-    border-radius: 10px 10px 0 0;
-}
-
-// Pagination Styling
-.pagination .page-item.active .page-link {
-    background-color: $secondary-color;
-    border-color: $secondary-color;
-    color: #fff;
-}
-
-.pagination .page-link {
-    color: $primary-color;
-}
-
-.pagination .page-link:hover {
-    background-color: lighten($secondary-color, 10%);
-    color: #fff;
-}
-
-// Custom Color and Styles for Edit Page
-$primary-color: #003366; // Biru Tua untuk branding
-$success-color: #28a745; // Hijau untuk tombol sukses
-
-.text-primary-custom {
-    color: $primary-color;
-}
-
-.btn-primary-custom {
-    background-color: $primary-color;
-    color: #ffffff;
-    font-weight: bold;
-    border: none;
-    transition: background-color 0.3s ease;
-}
-
-.btn-primary-custom:hover {
-    background-color: darken($primary-color, 10%);
-    color: #ffffff;
-}
-
-.card {
-    border-radius: 15px;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-}
-
-.form-control-lg {
-    font-size: 1.1rem;
-    padding: 0.5rem 1rem;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
-}
-
-.form-control-lg:focus {
-    box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.25);
-}
-
-// Custom Button Style
-.btn-primary-custom {
-    background-color: #003366;
-    color: #ffffff;
-    font-weight: bold;
-    border: none;
-    transition: background-color 0.3s ease;
-}
-
-.btn-primary-custom:hover {
-    background-color: darken(#003366, 10%);
-}
-
-// Alert Error Styling
-.alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    border-radius: 10px;
-}
-
-/* Warna dasar */
-body {
-    background-color: #f9f9f9;
-}
-
-/* Card style */
-.card {
-    transition: all 0.3s ease;
-    border: none;
-}
-
-.card:hover {
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* Initial Circle */
-.initial-circle {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: #fff;
-    margin-top: 10px;
-}
-
-/* Role Badge */
-.role-badge {
-    background-color: #6c757d;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-}
-
-/* Custom button styles with logo color theme */
-.btn-green {
-    background-color: #4CAF50; /* Green */
-    color: #fff;
-    border: none;
-}
-
-.btn-blue {
-    background-color: #337ab7; /* Blue from logo */
-    color: #fff;
-    border: none;
-}
-
-.btn-red {
-    background-color: #d9534f; /* Red */
-    color: #fff;
-    border: none;
-}   
-
-.btn-primary {
-    background-color: #337ab7;
-    border-color: #337ab7;
-}
-
-/* Hover effects */
-.btn-green:hover {
-    background-color: #45a049;
-}
-
-.btn-blue:hover {
-    background-color: #286090;
-}
-
-.btn-red:hover {
-    background-color: #c9302c;
-}

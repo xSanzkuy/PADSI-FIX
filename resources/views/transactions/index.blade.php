@@ -19,7 +19,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold page-title">📋 Daftar Transaksi</h3>
-        <a href="{{ route('transactions.create') }}" class="btn btn-add shadow-lg rounded-pill px-4 py-2">
+        <a href="{{ route('transactions.create') }}" class="btn btn-primary shadow rounded-pill px-4 py-2">
             <i class="fas fa-plus-circle me-2"></i> Tambah Transaksi
         </a>
     </div>
@@ -41,6 +41,7 @@
                                 <th>ID Transaksi</th>
                                 <th>Tanggal</th>
                                 <th>Pegawai</th>
+                                <th>Nama Member</th>
                                 <th>Total Bayar</th>
                                 <th>Nominal Pembayaran</th>
                                 <th>Kembalian</th>
@@ -53,6 +54,7 @@
                                     <td class="text-center">{{ $transaction->id }}</td>
                                     <td>{{ $transaction->tanggal }}</td>
                                     <td>{{ $transaction->pegawai ? $transaction->pegawai->nama : 'Pegawai tidak tersedia' }}</td>
+                                    <td>{{ $transaction->member ? $transaction->member->nama : 'Tidak Ada Member' }}</td>
                                     <td class="text-end">Rp {{ number_format($transaction->total_bayar, 0, ',', '.') }}</td>
                                     <td class="text-end">Rp {{ number_format($transaction->nominal, 0, ',', '.') }}</td>
                                     <td class="text-end">Rp {{ number_format($transaction->kembalian, 0, ',', '.') }}</td>

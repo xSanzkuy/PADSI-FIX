@@ -85,12 +85,22 @@ class MemberController extends Controller
      */
     public function destroy($id)
     {
-        // Mengambil data member berdasarkan ID dan menghapusnya
-        $member = Member::findOrFail($id);
-        $member->delete();
-
-        return redirect()->route('member.index')->with('success', 'Member berhasil dihapus.');
+        try {
+            $member = Member::findOrFail($id);
+            $member->delete();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Member berhasil dihapus.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menghapus member.',
+            ], 500);
+        }
     }
+    
     
     /**
      * Show the form to check membership status.

@@ -23,7 +23,7 @@
     @else
         <div class="row row-cols-1 row-cols-md-3 g-4">
             @foreach($pegawai as $pegawaiItem)
-                <div class="col">
+                <div class="col" id="pegawai-card-{{ $pegawaiItem->id }}">
                     <div class="card shadow-sm h-100 border-0 rounded-lg overflow-hidden">
                         <div class="card-body text-center">
                             <div class="avatar mb-3">
@@ -35,11 +35,7 @@
                             <p class="card-text">Role: <span class="badge bg-secondary">{{ ucfirst($pegawaiItem->role->nama_role) }}</span></p>
                             <div class="d-flex justify-content-between mt-4">
                                 <a href="{{ route('pegawai.edit', $pegawaiItem->id) }}" class="btn btn-warning btn-sm text-white shadow-sm">Edit</a>
-                                <form action="{{ route('pegawai.destroy', $pegawaiItem->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm shadow-sm" onclick="return confirm('Yakin ingin menghapus pegawai ini?')">Hapus</button>
-                                </form>
+                                <button type="button" class="btn btn-danger btn-sm shadow-sm" onclick="confirmDelete({{ $pegawaiItem->id }})">Hapus</button>
                             </div>
                         </div>
                     </div>
@@ -48,6 +44,64 @@
         </div>
     @endif
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Fungsi untuk konfirmasi hapus dengan SweetAlert
+    function confirmDelete(pegawaiId) {
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Data pegawai ini tidak dapat dikembalikan setelah dihapus.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#e63946',
+            cancelButtonColor: '#d6d6d6'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/master/pegawai/${pegawaiId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                        "Accept": "application/json"
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Berhasil!',
+                            text: 'Pegawai berhasil dihapus.',
+                            icon: 'success',
+                            confirmButtonColor: '#4e73df'
+                        }).then(() => {
+                            document.getElementById(`pegawai-card-${pegawaiId}`).remove(); // Hapus kartu pegawai
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Gagal!',
+                            text: data.message || 'Terjadi kesalahan saat menghapus pegawai.',
+                            icon: 'error',
+                            confirmButtonColor: '#e63946'
+                        });
+                    }
+                })
+                .catch(() => {
+                    Swal.fire({
+                        title: 'Gagal!',
+                        text: 'Terjadi kesalahan pada server.',
+                        icon: 'error',
+                        confirmButtonColor: '#e63946'
+                    });
+                });
+            }
+        });
+    }
+</script>
+@endpush
 
 <style>
     body {

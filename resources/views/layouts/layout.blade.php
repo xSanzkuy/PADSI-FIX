@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard')</title>
 
+    <!-- CSRF Token untuk AJAX request -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ mix('css/app.css') }}">
     <!-- Font Awesome -->
@@ -17,7 +20,6 @@
             overflow-y: auto;
             margin: 0;
             font-family: 'Montserrat', sans-serif;
-            background-color: #f0f2f5;
         }
 
         #wrapper {
@@ -25,6 +27,7 @@
             min-height: 100vh;
         }
 
+        /* Sidebar Styling */
         #sidebar {
             position: fixed;
             top: 0;
@@ -119,6 +122,28 @@
             width: 100%;
         }
 
+        .cart-icon {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: #007bff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 1100;
+        }
+
+        .cart-count {
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
         .logout-section {
             padding: 20px;
             margin-top: auto;
@@ -130,6 +155,59 @@
             font-size: 1rem;
             font-weight: bold;
             border-radius: 5px;
+        }
+
+        /* Animasi Background */
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(120deg, #ff9a9e, #fad0c4, #fbc2eb, #a1c4fd);
+            background-size: 400% 400%;
+            animation: backgroundAnimation 15s ease infinite;
+        }
+
+        @keyframes backgroundAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Floating Elements (Optional) */
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .floating-item {
+            position: absolute;
+            width: 80px;
+            animation: floating 6s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+            100% {
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 768px) {
@@ -147,10 +225,25 @@
     </style>
 </head>
 <body>
+    <!-- Background Animation -->
+    <div class="animated-background"></div>
+
+    <!-- Floating Elements -->
+    <div class="floating-elements">
+        <img src="{{ asset('images/burger.png') }}" class="floating-item" style="top: 10%; left: 20%;" alt="Burger">
+        <img src="{{ asset('images/kentang.png') }}" class="floating-item" style="top: 50%; left: 40%;" alt="Kentang">
+        <img src="{{ asset('images/ayam.png') }}" class="floating-item" style="top: 70%; left: 70%;" alt="Ayam">
+    </div>
 
     <button class="btn-toggle-sidebar">
         <i class="fas fa-bars"></i>
     </button>
+
+    <!-- Icon keranjang belanja -->
+    <div class="cart-icon" onclick="window.location.href='{{ route('cart.index') }}'">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count">0</span>
+    </div>
 
     <nav id="sidebar">
         <div>
@@ -169,7 +262,6 @@
                     </a>
                 </li>
 
-                <!-- Tampilkan menu Pegawai hanya jika pengguna memiliki peran Owner atau Superadmin -->
                 @if(Auth::check() && (Auth::user()->roles->pluck('nama_role')->contains('Owner') || Auth::user()->roles->pluck('nama_role')->contains('Superadmin')))
                     <li class="nav-item">
                         <a href="{{ route('pegawai.index') }}" class="nav-link {{ request()->is('pegawai*') ? 'active' : '' }}">
@@ -205,7 +297,7 @@
             </form>
         </div>
     </nav>
-
+        
     <div id="content">
         @yield('content')
     </div>
@@ -225,4 +317,3 @@
     @stack('scripts')
 </body>
 </html>
-    
